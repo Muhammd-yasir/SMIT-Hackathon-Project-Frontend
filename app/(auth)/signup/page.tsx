@@ -32,7 +32,7 @@ export default function SignupPage() {
         try {
             const formData = new FormData(e.currentTarget);
 
-            const result = await apiRequest("auth/sign-up", {
+            const result = await apiRequest("/auth/sign-up", {
                 method: "POST",
                 body: JSON.stringify({
                     email: formData.get("email"),
