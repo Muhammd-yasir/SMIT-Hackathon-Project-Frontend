@@ -33,7 +33,7 @@ export default function LoginPage() {
     try {
       const formData = new FormData(e.currentTarget);
 
-      const result = await apiRequest("/login", {
+      const result = await apiRequest("/auth/login", {
         method : "POST",
         body : JSON.stringify({
             email : formData.get("email"),
