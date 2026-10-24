@@ -1,65 +1,56 @@
 
 "use client";
 
-import { Box, Paper, Typography, Button, TextField, Stack, MenuItem } from "@mui/material";
+import { Box, Paper, Typography, Stack, TextField, Button, Grid } from "@mui/material";
 import PaymentsRoundedIcon from "@mui/icons-material/PaymentsRounded";
-import ReceiptLongRoundedIcon from "@mui/icons-material/ReceiptLongRounded";
+import CalculateRoundedIcon from "@mui/icons-material/CalculateRounded";
 import ModuleEmptyState from "@/components/dashboard/ModuleEmptyState";
-import DashboardHeader from "@/components/dashboard/DashboardHeader";
 
 export default function PayrollPage() {
   return (
-    <Box>
-      <DashboardHeader
-        title="Payroll Lite"
-        description="Organize payroll periods, salary calculations, and employee payslips."
-      />
+    <Box sx={{ maxWidth: 1100, mx: "auto" }}>
+      <Typography variant="h5" fontWeight={800} color="#173354">Payroll Lite</Typography>
+      <Typography color="text.secondary" fontSize={14} mt={.5} mb={3}>
+        Prepare payroll details and review payroll records.
+      </Typography>
 
-      <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", lg: "minmax(0,0.9fr) minmax(0,1.1fr)" }, gap: 3 }}>
-        <Paper elevation={0} sx={{ p: { xs: 2.5, sm: 3 }, borderRadius: 4, border: "1px solid #E5ECF5" }}>
-          <Stack direction="row" gap={1.5} alignItems="center" mb={3}>
-            <Box sx={{ p: 1.3, borderRadius: 3, bgcolor: "#E5F6FF", color: "#147FA7", display: "grid", placeItems: "center" }}>
-              <PaymentsRoundedIcon />
-            </Box>
-            <Box>
-              <Typography fontWeight={850} color="#183454">Payroll preparation</Typography>
-              <Typography fontSize={12} color="#77869D">Select a pay period and employee</Typography>
-            </Box>
-          </Stack>
+      <Grid container spacing={3}>
+        <Grid item xs={12} md={7}>
+          <Paper sx={{ p: { xs: 2, sm: 3 }, borderRadius: 4, border: "1px solid #E5EBF4" }}>
+            <Stack direction="row" alignItems="center" gap={1} mb={.5}>
+              <CalculateRoundedIcon sx={{ color: "#245BC0" }} />
+              <Typography fontWeight={800} color="#173354">Payroll calculation</Typography>
+            </Stack>
+            <Typography fontSize={13} color="text.secondary" mb={3}>Enter payroll inputs for a pay period.</Typography>
 
-          <Stack gap={2}>
-            <TextField select label="Payroll period" defaultValue="" fullWidth>
-              <MenuItem value="monthly">Monthly</MenuItem>
-              <MenuItem value="biweekly">Biweekly</MenuItem>
-            </TextField>
-            <TextField label="Pay period" type="month" fullWidth slotProps={{ inputLabel: { shrink: true } }} />
-            <TextField label="Employee ID or email" fullWidth />
-            <TextField label="Basic salary (PKR)" type="number" fullWidth slotProps={{ htmlInput: { min: 0 } }} />
-            <TextField label="Allowances (PKR)" type="number" fullWidth slotProps={{ htmlInput: { min: 0 } }} />
-            <TextField label="Deductions (PKR)" type="number" fullWidth slotProps={{ htmlInput: { min: 0 } }} />
-            <Button disabled variant="contained" sx={{ py: 1.2, borderRadius: 2.5, textTransform: "none" }}>
-              Calculate payroll
-            </Button>
-          </Stack>
-        </Paper>
+            <Stack spacing={2}>
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={6}><TextField label="Pay period" type="month" InputLabelProps={{ shrink: true }} fullWidth /></Grid>
+                <Grid item xs={12} sm={6}><TextField label="Employee ID" fullWidth placeholder="Enter employee ID" /></Grid>
+              </Grid>
+              <TextField label="Basic salary" type="number" fullWidth />
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={6}><TextField label="Allowances" type="number" fullWidth /></Grid>
+                <Grid item xs={12} sm={6}><TextField label="Deductions" type="number" fullWidth /></Grid>
+              </Grid>
+              <Button disabled variant="contained" startIcon={<CalculateRoundedIcon />} sx={{ alignSelf: "flex-start", borderRadius: 2, py: 1.2, textTransform: "none", fontWeight: 700 }}>
+                Calculate payroll
+              </Button>
+              <Typography fontSize={12} color="text.secondary">Calculation and payroll saving will be connected to the backend.</Typography>
+            </Stack>
+          </Paper>
+        </Grid>
 
-        <Paper elevation={0} sx={{ p: { xs: 2.5, sm: 3 }, borderRadius: 4, border: "1px solid #E5ECF5" }}>
-          <Stack direction="row" alignItems="center" gap={1.5} mb={3}>
-            <Box sx={{ p: 1.3, borderRadius: 3, bgcolor: "#EAF1FF", color: "#245BC0", display: "grid", placeItems: "center" }}>
-              <ReceiptLongRoundedIcon />
-            </Box>
-            <Box>
-              <Typography fontWeight={850} color="#183454">Payroll records</Typography>
-              <Typography fontSize={12} color="#77869D">Payroll runs and payslip history</Typography>
-            </Box>
-          </Stack>
-          <ModuleEmptyState
-            icon={ReceiptLongRoundedIcon}
-            title="No payroll records"
-            description="Payroll periods, calculated salaries, and issued payslips will be listed here when records exist."
-          />
-        </Paper>
-      </Box>
+        <Grid item xs={12} md={5}>
+          <Paper sx={{ p: { xs: 2, sm: 3 }, borderRadius: 4, border: "1px solid #E5EBF4", height: "100%" }}>
+            <Stack direction="row" alignItems="center" gap={1} mb={3}>
+              <PaymentsRoundedIcon sx={{ color: "#245BC0" }} />
+              <Typography fontWeight={800} color="#173354">Payroll records</Typography>
+            </Stack>
+            <ModuleEmptyState title="No payroll records yet" description="Saved payroll runs will appear here after payroll processing is implemented." />
+          </Paper>
+        </Grid>
+      </Grid>
     </Box>
   );
 }

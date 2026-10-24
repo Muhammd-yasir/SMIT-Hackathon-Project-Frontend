@@ -1,83 +1,61 @@
 
 "use client";
 
-import { Box, Paper, Typography, Button, Stack, Chip } from "@mui/material";
+import { Box, Paper, Typography, Stack, Button, Chip, Grid } from "@mui/material";
 import AccessTimeRoundedIcon from "@mui/icons-material/AccessTimeRounded";
 import LoginRoundedIcon from "@mui/icons-material/LoginRounded";
 import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
-import CalendarMonthRoundedIcon from "@mui/icons-material/CalendarMonthRounded";
+import HistoryRoundedIcon from "@mui/icons-material/HistoryRounded";
 import ModuleEmptyState from "@/components/dashboard/ModuleEmptyState";
-import DashboardHeader from "@/components/dashboard/DashboardHeader";
 
-const cardSx = {
-  p: 2.5,
-  borderRadius: 3.5,
-  border: "1px solid #E5ECF5",
-  boxShadow: "none",
-  flex: 1,
-};
+function SummaryCard({ title, value, icon: Icon, caption }) {
+  return (
+    <Paper sx={{ p: 2.5, borderRadius: 3, border: "1px solid #E5EBF4", height: "100%" }}>
+      <Stack direction="row" justifyContent="space-between" alignItems="center">
+        <Typography fontSize={13} color="text.secondary">{title}</Typography>
+        <Box sx={{ p: 1, bgcolor: "#EAF1FF", color: "#245BC0", borderRadius: 2 }}><Icon fontSize="small" /></Box>
+      </Stack>
+      <Typography variant="h4" fontWeight={800} color="#173354" mt={2}>{value}</Typography>
+      <Typography fontSize={12} color="text.secondary" mt={1}>{caption}</Typography>
+    </Paper>
+  );
+}
 
 export default function AttendancePage() {
   return (
-    <Box>
-      <DashboardHeader
-        title="Attendance"
-        description="Keep daily attendance and working hours organized in one place."
-      />
+    <Box sx={{ maxWidth: 1100, mx: "auto" }}>
+      <Typography variant="h5" fontWeight={800} color="#173354">Attendance</Typography>
+      <Typography color="text.secondary" fontSize={14} mt={.5} mb={3}>
+        Review attendance and manage daily check-in and check-out.
+      </Typography>
 
-      <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "repeat(3,minmax(0,1fr))" }, gap: 2, mb: 3 }}>
-        {[
-          { label: "Check-in", value: "—", detail: "Today's start time", icon: LoginRoundedIcon, tint: "#E5F8F1", color: "#168765" },
-          { label: "Check-out", value: "—", detail: "Today's finish time", icon: LogoutRoundedIcon, tint: "#FFF3E4", color: "#C57919" },
-          { label: "Working hours", value: "—", detail: "Daily duration", icon: AccessTimeRoundedIcon, tint: "#EAF1FF", color: "#245BC0" },
-        ].map((item) => {
-          const Icon = item.icon;
-          return (
-            <Paper key={item.label} sx={cardSx}>
-              <Stack direction="row" justifyContent="space-between" alignItems="center">
-                <Typography fontSize={13} color="#77869D">{item.label}</Typography>
-                <Box sx={{ p: 1, borderRadius: 2.5, bgcolor: item.tint, color: item.color, display: "grid", placeItems: "center" }}>
-                  <Icon fontSize="small" />
-                </Box>
-              </Stack>
-              <Typography fontSize={29} fontWeight={850} color="#183454" mt={2}>{item.value}</Typography>
-              <Typography fontSize={12} color="#77869D" mt={0.5}>{item.detail}</Typography>
-            </Paper>
-          );
-        })}
-      </Box>
+      <Grid container spacing={2} mb={3}>
+        <Grid item xs={12} sm={4}><SummaryCard title="Current status" value="—" icon={AccessTimeRoundedIcon} caption="No active attendance record" /></Grid>
+        <Grid item xs={12} sm={4}><SummaryCard title="Check-in time" value="—" icon={LoginRoundedIcon} caption="No check-in recorded" /></Grid>
+        <Grid item xs={12} sm={4}><SummaryCard title="Check-out time" value="—" icon={LogoutRoundedIcon} caption="No check-out recorded" /></Grid>
+      </Grid>
 
-      <Paper elevation={0} sx={{ p: { xs: 2.5, sm: 3 }, borderRadius: 4, border: "1px solid #E5ECF5", mb: 3 }}>
-        <Stack direction={{ xs: "column", sm: "row" }} justifyContent="space-between" alignItems={{ xs: "flex-start", sm: "center" }} gap={2}>
-          <Stack direction="row" alignItems="center" gap={1.5}>
-            <Box sx={{ p: 1.3, borderRadius: 3, bgcolor: "#EAF1FF", color: "#245BC0", display: "grid", placeItems: "center" }}>
-              <CalendarMonthRoundedIcon />
-            </Box>
-            <Box>
-              <Typography fontWeight={850} color="#183454">Daily attendance</Typography>
-              <Typography fontSize={12} color="#77869D">Check-in and check-out controls</Typography>
-            </Box>
-          </Stack>
-          <Chip label="No active attendance record" variant="outlined" sx={{ borderColor: "#DCE5F2", color: "#71829A" }} />
+      <Paper sx={{ p: { xs: 2, sm: 3 }, mb: 3, borderRadius: 4, border: "1px solid #E5EBF4" }}>
+        <Stack direction={{ xs: "column", sm: "row" }} justifyContent="space-between" alignItems={{ sm: "center" }} gap={2}>
+          <Box>
+            <Typography fontWeight={800} color="#173354">Today’s attendance</Typography>
+            <Typography fontSize={13} color="text.secondary" mt={.5}>Your attendance status will appear here.</Typography>
+          </Box>
+          <Chip label="No active record" sx={{ bgcolor: "#F1F5F9", color: "#64748B", fontWeight: 700 }} />
         </Stack>
-
-        <Stack direction={{ xs: "column", sm: "row" }} gap={1.5} mt={3}>
-          <Button disabled variant="contained" startIcon={<LoginRoundedIcon />} sx={{ textTransform: "none", py: 1.2 }}>
-            Check in
-          </Button>
-          <Button disabled variant="outlined" startIcon={<LogoutRoundedIcon />} sx={{ textTransform: "none", py: 1.2 }}>
-            Check out
-          </Button>
+        <Stack direction="row" gap={1.5} mt={3}>
+          <Button disabled variant="contained" startIcon={<LoginRoundedIcon />} sx={{ borderRadius: 2, textTransform: "none" }}>Check in</Button>
+          <Button disabled variant="outlined" startIcon={<LogoutRoundedIcon />} sx={{ borderRadius: 2, textTransform: "none" }}>Check out</Button>
         </Stack>
+        <Typography fontSize={12} color="text.secondary" mt={1.5}>Attendance actions will be enabled when the backend is connected.</Typography>
       </Paper>
 
-      <Paper elevation={0} sx={{ p: 2.5, borderRadius: 4, border: "1px solid #E5ECF5" }}>
-        <Typography fontWeight={850} color="#183454" mb={2}>Attendance history</Typography>
-        <ModuleEmptyState
-          icon={AccessTimeRoundedIcon}
-          title="No attendance records"
-          description="Daily records will appear here with check-in times, check-out times, and total working hours."
-        />
+      <Paper sx={{ p: { xs: 2, sm: 3 }, borderRadius: 4, border: "1px solid #E5EBF4" }}>
+        <Stack direction="row" alignItems="center" gap={1} mb={3}>
+          <HistoryRoundedIcon sx={{ color: "#245BC0" }} />
+          <Typography fontWeight={800} color="#173354">Attendance history</Typography>
+        </Stack>
+        <ModuleEmptyState title="No attendance history available" description="Attendance records will appear here when the system has saved records to display." />
       </Paper>
     </Box>
   );

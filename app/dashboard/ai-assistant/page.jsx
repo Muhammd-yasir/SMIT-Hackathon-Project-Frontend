@@ -2,79 +2,76 @@
 "use client";
 
 import { useState } from "react";
-import {
-  Box, Paper, Typography, Stack, TextField, Button, Chip,
-} from "@mui/material";
+import { Box, Paper, Typography, Stack, TextField, Button, Chip } from "@mui/material";
 import AutoAwesomeRoundedIcon from "@mui/icons-material/AutoAwesomeRounded";
 import SendRoundedIcon from "@mui/icons-material/SendRounded";
-import ShieldRoundedIcon from "@mui/icons-material/ShieldRounded";
-import DashboardHeader from "@/components/dashboard/DashboardHeader";
+import SmartToyRoundedIcon from "@mui/icons-material/SmartToyRounded";
 
 const suggestions = [
   "Summarize workforce activity",
   "Explain an attendance report",
-  "Help review leave policies",
+  "Help review a leave policy",
 ];
 
 export default function AIAssistantPage() {
   const [question, setQuestion] = useState("");
 
   return (
-    <Box>
-      <DashboardHeader
-        title="AI Assistant"
-        description="An AI workspace for HR questions, policy guidance, and workforce insights."
-      />
+    <Box sx={{ maxWidth: 1000, mx: "auto" }}>
+      <Stack direction="row" alignItems="center" gap={2} mb={3}>
+        <Box sx={{ p: 1.5, borderRadius: 3, bgcolor: "#EAF1FF", color: "#245BC0" }}>
+          <AutoAwesomeRoundedIcon />
+        </Box>
+        <Box>
+          <Typography variant="h5" fontWeight={800} color="#173354">AI assistant</Typography>
+          <Typography color="text.secondary" fontSize={14}>A workspace for HR questions and people operations support.</Typography>
+        </Box>
+      </Stack>
 
-      <Paper elevation={0} sx={{ maxWidth: 1000, mx: "auto", overflow: "hidden", borderRadius: 4, border: "1px solid #E5ECF5" }}>
-        <Box sx={{ p: { xs: 2.5, sm: 3 }, display: "flex", alignItems: "center", gap: 1.5, background: "linear-gradient(120deg,#F3F7FF,#FFFFFF)", borderBottom: "1px solid #E5ECF5" }}>
-          <Box sx={{ width: 48, height: 48, display: "grid", placeItems: "center", borderRadius: 3, bgcolor: "#F0E9FF", color: "#7651C8" }}>
-            <AutoAwesomeRoundedIcon />
-          </Box>
-          <Box sx={{ flex: 1 }}>
-            <Typography fontWeight={850} color="#183454">HCM Assistant</Typography>
-            <Typography fontSize={12} color="#77869D">Your HR conversation space</Typography>
-          </Box>
-          <Chip icon={<ShieldRoundedIcon />} label="Privacy-aware" size="small" sx={{ bgcolor: "#E5F8F1", color: "#168765", "& .MuiChip-icon": { color: "#168765" } }} />
+      <Paper sx={{ borderRadius: 4, overflow: "hidden", border: "1px solid #E5EBF4", boxShadow: "0 8px 30px #18345408" }}>
+        <Box sx={{ p: 3, background: "linear-gradient(120deg,#173A75,#2868CF)", color: "white" }}>
+          <Stack direction="row" alignItems="center" gap={1}>
+            <SmartToyRoundedIcon />
+            <Typography fontWeight={800}>HCM Assistant</Typography>
+            <Chip label="AI workspace" size="small" sx={{ ml: "auto", color: "white", bgcolor: "#FFFFFF20" }} />
+          </Stack>
+          <Typography fontSize={13} sx={{ mt: 1, color: "#E0EAFF", lineHeight: 1.8 }}>
+            Ask a question or choose a suggested prompt to get started.
+          </Typography>
         </Box>
 
-        <Box sx={{ p: { xs: 2, sm: 4 }, minHeight: 350, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center" }}>
-          <Box sx={{ width: 70, height: 70, display: "grid", placeItems: "center", borderRadius: "23px", bgcolor: "#F0E9FF", color: "#7651C8", mb: 2 }}>
-            <AutoAwesomeRoundedIcon sx={{ fontSize: 34 }} />
+        <Box sx={{ p: { xs: 2, sm: 3 } }}>
+          <Box sx={{ textAlign: "center", py: 3 }}>
+            <Box sx={{ width: 64, height: 64, borderRadius: 4, bgcolor: "#EAF1FF", color: "#245BC0", display: "grid", placeItems: "center", mx: "auto", mb: 2 }}>
+              <AutoAwesomeRoundedIcon sx={{ fontSize: 30 }} />
+            </Box>
+            <Typography fontWeight={800} color="#173354">How can I help you today?</Typography>
+            <Typography fontSize={13} color="text.secondary" mt={1}>Choose a prompt below or type your own question.</Typography>
           </Box>
-          <Typography fontSize={22} fontWeight={850} color="#183454">How can I help you today?</Typography>
-          <Typography maxWidth={470} fontSize={13} lineHeight={1.9} color="#77869D" mt={1}>
-            Ask about HR processes, workplace policies, or workforce reports.
-          </Typography>
 
-          <Stack direction="row" flexWrap="wrap" justifyContent="center" gap={1} mt={3}>
-            {suggestions.map((suggestion) => (
-              <Chip
-                key={suggestion}
-                label={suggestion}
-                clickable
-                onClick={() => setQuestion(suggestion)}
-                variant="outlined"
-                sx={{ borderColor: "#DCE5F2", color: "#34577E", bgcolor: "#FFFFFF", height: "auto", py: 0.7, "& .MuiChip-label": { whiteSpace: "normal" } }}
-              />
+          <Stack direction="row" flexWrap="wrap" useFlexGap gap={1} justifyContent="center" mb={3}>
+            {suggestions.map((item) => (
+              <Chip key={item} label={item} onClick={() => setQuestion(item)} variant="outlined"
+                sx={{ borderColor: "#D7E2F0", borderRadius: 2, cursor: "pointer", py: 2.2 }} />
             ))}
           </Stack>
-        </Box>
 
-        <Box component="form" onSubmit={(e) => e.preventDefault()} sx={{ p: 2, borderTop: "1px solid #E5ECF5" }}>
-          <Stack direction="row" gap={1}>
+          <Stack direction={{ xs: "column", sm: "row" }} gap={1.5}>
             <TextField
-              fullWidth
-              size="small"
-              placeholder="Write your question..."
+              fullWidth multiline maxRows={4}
+              placeholder="Ask about HR processes, policies, or reports..."
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
-              sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2.5 } }}
+              sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
             />
-            <Button type="button" variant="contained" disabled={!question.trim()} aria-label="Send question" sx={{ minWidth: 48, borderRadius: 2.5 }}>
-              <SendRoundedIcon />
+            <Button disabled={!question.trim()} variant="contained" endIcon={<SendRoundedIcon />}
+              sx={{ borderRadius: 2, px: 3, textTransform: "none", fontWeight: 700 }}>
+              Send
             </Button>
           </Stack>
+          <Typography fontSize={12} color="text.secondary" mt={1.5}>
+            AI responses will be enabled after the assistant service is connected.
+          </Typography>
         </Box>
       </Paper>
     </Box>

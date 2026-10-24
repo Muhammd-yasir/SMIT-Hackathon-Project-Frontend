@@ -1,49 +1,51 @@
 
 "use client";
 
+import { useState } from "react";
 import { Box, Paper, Typography, Stack, TextField, MenuItem, Chip } from "@mui/material";
 import FactCheckRoundedIcon from "@mui/icons-material/FactCheckRounded";
-import SecurityRoundedIcon from "@mui/icons-material/SecurityRounded";
-import DashboardHeader from "@/components/dashboard/DashboardHeader";
+import FilterListRoundedIcon from "@mui/icons-material/FilterListRounded";
 import ModuleEmptyState from "@/components/dashboard/ModuleEmptyState";
 
 export default function AuditPage() {
-  return (
-    <Box>
-      <DashboardHeader
-        title="Audit Log"
-        description="Maintain visibility into important actions and changes across your HCM workspace."
-      />
+  const [category, setCategory] = useState("all");
 
-      <Paper elevation={0} sx={{ p: { xs: 2.5, sm: 3 }, borderRadius: 4, border: "1px solid #E5ECF5" }}>
-        <Stack direction={{ xs: "column", sm: "row" }} alignItems={{ xs: "stretch", sm: "center" }} justifyContent="space-between" gap={2} mb={3}>
+  return (
+    <Box sx={{ maxWidth: 1100, mx: "auto" }}>
+      <Typography variant="h5" fontWeight={800} color="#173354">Audit log</Typography>
+      <Typography color="text.secondary" fontSize={14} mt={.5} mb={3}>
+        Review system activity and maintain visibility into important actions.
+      </Typography>
+
+      <Paper sx={{ p: { xs: 2, sm: 3 }, borderRadius: 4, border: "1px solid #E5EBF4", boxShadow: "0 8px 30px #18345408" }}>
+        <Stack direction={{ xs: "column", sm: "row" }} justifyContent="space-between" alignItems={{ sm: "center" }} gap={2} mb={3}>
           <Stack direction="row" alignItems="center" gap={1.5}>
-            <Box sx={{ p: 1.3, borderRadius: 3, bgcolor: "#E8F5F9", color: "#237B91", display: "grid", placeItems: "center" }}>
+            <Box sx={{ p: 1.2, bgcolor: "#EAF1FF", color: "#245BC0", borderRadius: 2.5 }}>
               <FactCheckRoundedIcon />
             </Box>
             <Box>
-              <Typography fontWeight={850} color="#183454">Activity history</Typography>
-              <Typography fontSize={12} color="#77869D">System events and user actions</Typography>
+              <Typography fontWeight={800} color="#173354">Activity history</Typography>
+              <Typography fontSize={13} color="text.secondary">System events and administrative actions.</Typography>
             </Box>
           </Stack>
-
-          <Stack direction="row" gap={1} alignItems="center">
-            <TextField select size="small" label="Category" defaultValue="all" sx={{ minWidth: 170 }}>
-              <MenuItem value="all">All categories</MenuItem>
-              <MenuItem value="authentication">Authentication</MenuItem>
-              <MenuItem value="employees">Employees</MenuItem>
-              <MenuItem value="attendance">Attendance</MenuItem>
-              <MenuItem value="leave">Leave</MenuItem>
-              <MenuItem value="payroll">Payroll</MenuItem>
-            </TextField>
-            <Chip icon={<SecurityRoundedIcon />} label="Audit" variant="outlined" sx={{ borderColor: "#DCE5F2", color: "#526780" }} />
-          </Stack>
+          <Chip icon={<FilterListRoundedIcon />} label="Filters" variant="outlined" sx={{ borderColor: "#D7E2F0" }} />
         </Stack>
+
+        <TextField select label="Activity category" value={category} onChange={(e) => setCategory(e.target.value)}
+          sx={{ width: { xs: "100%", sm: 260 }, mb: 3, "& .MuiOutlinedInput-root": { borderRadius: 2 } }}>
+          <MenuItem value="all">All activity</MenuItem>
+          <MenuItem value="auth">Authentication</MenuItem>
+          <MenuItem value="employee">Employee changes</MenuItem>
+          <MenuItem value="leave">Leave management</MenuItem>
+          <MenuItem value="payroll">Payroll</MenuItem>
+        </TextField>
 
         <ModuleEmptyState
           icon={FactCheckRoundedIcon}
-          title="No activity recorded"
-          description="Recorded sign-ins, employee changes, attendance actions, leave decisions, and payroll events will be displayed here."
+          title="No activity records available"
+          description={category === "all"
+            ? "Recorded actions will appear here once audit logging is connected."
+            : "There are no loaded records for this category yet. Audit results will be filterable when data is available."}
         />
       </Paper>
     </Box>

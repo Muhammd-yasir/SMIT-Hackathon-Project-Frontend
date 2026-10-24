@@ -3,79 +3,75 @@
 
 import { useState } from "react";
 import {
-  Box, Paper, Typography, Button, TextField, InputAdornment,
-  Stack, Avatar, Chip, Dialog, DialogTitle, DialogContent,
-  DialogActions, MenuItem
+  Box, Paper, Typography, Button, TextField, Stack,
+  InputAdornment, Dialog, DialogTitle, DialogContent,
+  DialogActions, MenuItem,
 } from "@mui/material";
-import GroupsRoundedIcon from "@mui/icons-material/GroupsRounded";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import PersonAddAlt1RoundedIcon from "@mui/icons-material/PersonAddAlt1Rounded";
+import GroupsRoundedIcon from "@mui/icons-material/GroupsRounded";
 import ModuleEmptyState from "@/components/dashboard/ModuleEmptyState";
-import DashboardHeader from "@/components/dashboard/DashboardHeader";
 
 export default function EmployeesPage() {
-  const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
+  const [open, setOpen] = useState(false);
 
   return (
-    <Box>
-      <DashboardHeader
-        title="Employees"
-        description="A clear, organized view of the people who make your organization work."
-      />
+    <Box sx={{ maxWidth: 1100, mx: "auto" }}>
+      <Stack direction={{ xs: "column", sm: "row" }} justifyContent="space-between" alignItems={{ sm: "center" }} gap={2} mb={3}>
+        <Box>
+          <Typography variant="h5" fontWeight={800} color="#173354">Employees</Typography>
+          <Typography color="text.secondary" fontSize={14} mt={.5}>
+            Manage employee profiles and directory information.
+          </Typography>
+        </Box>
+        <Button onClick={() => setOpen(true)} variant="contained" startIcon={<PersonAddAlt1RoundedIcon />} sx={{ borderRadius: 2, py: 1.2, textTransform: "none", fontWeight: 700 }}>
+          Add employee
+        </Button>
+      </Stack>
 
-      <Paper elevation={0} sx={{ p: { xs: 2, sm: 3 }, borderRadius: 4, border: "1px solid #E5ECF5" }}>
-        <Stack direction={{ xs: "column", sm: "row" }} justifyContent="space-between" alignItems={{ xs: "stretch", sm: "center" }} gap={2} mb={3}>
-          <Stack direction="row" alignItems="center" gap={1.5}>
-            <Avatar sx={{ width: 46, height: 46, bgcolor: "#E5F8F1", color: "#168765" }}>
-              <GroupsRoundedIcon />
-            </Avatar>
-            <Box>
-              <Typography fontWeight={850} color="#183454">Employee directory</Typography>
-              <Typography fontSize={12} color="#77869D">Employee profiles and work details</Typography>
-            </Box>
-          </Stack>
-          <Button onClick={() => setOpen(true)} variant="contained" startIcon={<PersonAddAlt1RoundedIcon />} sx={{ borderRadius: 2.5, textTransform: "none", py: 1.1 }}>
-            Add employee
-          </Button>
+      <Paper sx={{ p: { xs: 2, sm: 3 }, borderRadius: 4, border: "1px solid #E5EBF4", boxShadow: "0 8px 30px #18345408" }}>
+        <Stack direction={{ xs: "column", sm: "row" }} justifyContent="space-between" gap={2} mb={3}>
+          <Box>
+            <Typography fontWeight={800} color="#173354">Employee directory</Typography>
+            <Typography fontSize={13} color="text.secondary" mt={.5}>Search and manage your workforce.</Typography>
+          </Box>
+          <TextField
+            size="small"
+            placeholder="Search employees"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            sx={{ width: { xs: "100%", sm: 280 }, "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
+            InputProps={{ startAdornment: <InputAdornment position="start"><SearchRoundedIcon fontSize="small" /></InputAdornment> }}
+          />
         </Stack>
-
-        <TextField
-          fullWidth
-          size="small"
-          placeholder="Search by employee name, email, or department"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          sx={{ mb: 3, maxWidth: 520, "& .MuiOutlinedInput-root": { borderRadius: 2.5 } }}
-          InputProps={{
-            startAdornment: <InputAdornment position="start"><SearchRoundedIcon sx={{ color: "#91A0B4" }} /></InputAdornment>,
-          }}
-        />
-
         <ModuleEmptyState
           icon={GroupsRoundedIcon}
-          title={search ? "No matching employees" : "Your team directory"}
-          description={search ? "Try a different search term." : "Employee profiles will be listed here, with their departments, roles, and contact details."}
+          title={search ? "No matching employees yet" : "Your employee directory is ready"}
+          description={search
+            ? "Employee search will work once employee records are available."
+            : "Employee profiles will appear here after records are loaded from the backend."}
         />
       </Paper>
 
       <Dialog open={open} onClose={() => setOpen(false)} fullWidth maxWidth="sm">
-        <DialogTitle fontWeight={850}>Add employee</DialogTitle>
+        <DialogTitle sx={{ fontWeight: 800, color: "#173354" }}>Add employee</DialogTitle>
         <DialogContent>
-          <Stack gap={2} sx={{ pt: 1 }}>
-            <TextField label="Full name" required fullWidth />
-            <TextField label="Email address" type="email" required fullWidth />
-            <TextField label="Employee ID" fullWidth />
-            <TextField label="Job title" fullWidth />
-            <TextField label="Department" fullWidth />
-            <TextField label="Employment type" select defaultValue="Full-time" fullWidth>
-              {["Full-time", "Part-time", "Contract", "Intern"].map((item) => <MenuItem key={item} value={item}>{item}</MenuItem>)}
+          <Typography fontSize={13} color="text.secondary" mb={2}>
+            Employee creation will be connected to the backend next.
+          </Typography>
+          <Stack spacing={2} sx={{ pt: 1 }}>
+            <TextField label="Full name" fullWidth />
+            <TextField label="Work email" type="email" fullWidth />
+            <TextField select label="Department" defaultValue="" fullWidth>
+              {["Engineering", "Human Resources", "Finance", "Operations", "Other"].map((d) => <MenuItem key={d} value={d}>{d}</MenuItem>)}
             </TextField>
+            <TextField label="Job title" fullWidth />
           </Stack>
         </DialogContent>
-        <DialogActions sx={{ p: 3 }}>
-          <Button onClick={() => setOpen(false)}>Close</Button>
-          <Button variant="contained" onClick={() => setOpen(false)}>Done</Button>
+        <DialogActions sx={{ p: 2.5 }}>
+          <Button onClick={() => setOpen(false)} sx={{ textTransform: "none" }}>Close</Button>
+          <Button disabled variant="contained" sx={{ textTransform: "none" }}>Create employee</Button>
         </DialogActions>
       </Dialog>
     </Box>

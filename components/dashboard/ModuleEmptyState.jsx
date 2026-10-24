@@ -11,29 +11,29 @@ export default function ModuleEmptyState({
   return (
     <Box
       sx={{
-        py: { xs: 4, sm: 6 },
-        px: 2,
+        py: 5,
+        px: 2.5,
         textAlign: "center",
+        border: "1px dashed #D7E2F0",
         borderRadius: 3,
-        bgcolor: "#F8FAFE",
-        border: "1px dashed #DCE5F2",
+        bgcolor: "#F8FAFD",
       }}
     >
       {Icon && (
         <Box
           sx={{
-            width: 54,
-            height: 54,
-            display: "grid",
-            placeItems: "center",
+            width: 58,
+            height: 58,
             mx: "auto",
             mb: 2,
-            borderRadius: "17px",
-            bgcolor: "#EAF1FF",
+            display: "grid",
+            placeItems: "center",
+            borderRadius: 3,
+            bgcolor: "#E9F1FF",
             color: "#245BC0",
           }}
         >
-          <Icon sx={{ fontSize: 27 }} />
+          <Icon sx={{ fontSize: 28 }} />
         </Box>
       )}
       <Typography fontWeight={800} color="#183454">
@@ -41,12 +41,12 @@ export default function ModuleEmptyState({
       </Typography>
       <Typography
         sx={{
-          maxWidth: 440,
-          mx: "auto",
           mt: 1,
+          maxWidth: 420,
+          mx: "auto",
+          color: "#73839A",
           fontSize: 13,
-          lineHeight: 1.9,
-          color: "#77869D",
+          lineHeight: 1.8,
         }}
       >
         {description}
