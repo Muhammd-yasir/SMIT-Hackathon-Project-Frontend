@@ -1,136 +1,62 @@
 
 "use client";
 
-import { useState } from "react";
-import {
-  Alert,
-  Box,
-  Button,
-  Chip,
-  MenuItem,
-  Paper,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Box, Paper, Typography, Button, TextField, Stack, MenuItem } from "@mui/material";
 import CampaignRoundedIcon from "@mui/icons-material/CampaignRounded";
 import SendRoundedIcon from "@mui/icons-material/SendRounded";
+import NotificationsActiveRoundedIcon from "@mui/icons-material/NotificationsActiveRounded";
+import ModuleEmptyState from "@/components/dashboard/ModuleEmptyState";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
 
 export default function CommunicationsPage() {
-  const [announcements, setAnnouncements] = useState([]);
-  const [message, setMessage] = useState("");
-  const [form, setForm] = useState({
-    title: "",
-    audience: "All employees",
-    body: "",
-  });
-
-  const handlePublish = (event) => {
-    event.preventDefault();
-
-    setAnnouncements((current) => [
-      {
-        ...form,
-        id: crypto.randomUUID(),
-        createdAt: new Date().toLocaleString(),
-      },
-      ...current,
-    ]);
-
-    setForm({ title: "", audience: "All employees", body: "" });
-    setMessage("Announcement added to this page's local list.");
-  };
-
   return (
     <Box>
       <DashboardHeader
         title="Communications"
-        description="Create clear workplace announcements and keep important messages organized."
+        description="Create workplace announcements and keep important team updates organized."
       />
 
-      <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", lg: "minmax(0, 0.9fr) minmax(0, 1.1fr)" }, gap: 3 }}>
-        <Paper elevation={0} sx={{ p: 3, borderRadius: 4, border: "1px solid #E5ECF5", alignSelf: "start" }}>
+      <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", lg: "minmax(0,0.9fr) minmax(0,1.1fr)" }, gap: 3 }}>
+        <Paper elevation={0} sx={{ p: { xs: 2.5, sm: 3 }, borderRadius: 4, border: "1px solid #E5ECF5" }}>
           <Stack direction="row" gap={1.5} alignItems="center" mb={3}>
             <Box sx={{ p: 1.3, borderRadius: 3, bgcolor: "#FFECEF", color: "#C44E71", display: "grid", placeItems: "center" }}>
               <CampaignRoundedIcon />
             </Box>
-            <Typography fontWeight={800} color="#183454">Create announcement</Typography>
+            <Box>
+              <Typography fontWeight={850} color="#183454">New announcement</Typography>
+              <Typography fontSize={12} color="#77869D">Prepare a message for your audience</Typography>
+            </Box>
           </Stack>
 
-          {message && <Alert severity="success" sx={{ mb: 2 }}>{message}</Alert>}
-
-          <Box component="form" onSubmit={handlePublish}>
-            <Stack gap={2}>
-              <TextField
-                label="Announcement title"
-                value={form.title}
-                onChange={(e) => setForm({ ...form, title: e.target.value })}
-                required
-                fullWidth
-              />
-              <TextField
-                select
-                label="Audience"
-                value={form.audience}
-                onChange={(e) => setForm({ ...form, audience: e.target.value })}
-                fullWidth
-              >
-                {["All employees", "HR team", "Managers", "Administrators"].map((audience) => (
-                  <MenuItem key={audience} value={audience}>{audience}</MenuItem>
-                ))}
-              </TextField>
-              <TextField
-                label="Message"
-                multiline
-                minRows={5}
-                value={form.body}
-                onChange={(e) => setForm({ ...form, body: e.target.value })}
-                required
-                fullWidth
-              />
-              <Button
-                type="submit"
-                variant="contained"
-                startIcon={<SendRoundedIcon />}
-                sx={{ textTransform: "none", py: 1.2 }}
-              >
-                Publish announcement
-              </Button>
-            </Stack>
-          </Box>
+          <Stack gap={2}>
+            <TextField label="Announcement title" fullWidth />
+            <TextField select label="Audience" defaultValue="All employees" fullWidth>
+              {["All employees", "HR team", "Managers", "Administrators"].map((item) => (
+                <MenuItem key={item} value={item}>{item}</MenuItem>
+              ))}
+            </TextField>
+            <TextField label="Message" multiline minRows={5} fullWidth />
+            <Button disabled variant="contained" startIcon={<SendRoundedIcon />} sx={{ py: 1.2, borderRadius: 2.5, textTransform: "none" }}>
+              Publish announcement
+            </Button>
+          </Stack>
         </Paper>
 
-        <Paper elevation={0} sx={{ p: 3, borderRadius: 4, border: "1px solid #E5ECF5" }}>
-          <Typography fontWeight={800} color="#183454">Announcements</Typography>
-          <Typography fontSize={13} color="#77869D" mt={0.5} mb={3}>
-            {announcements.length} announcement{announcements.length === 1 ? "" : "s"} in this session
-          </Typography>
-
-          {announcements.length === 0 ? (
-            <Box sx={{ py: 6, textAlign: "center", bgcolor: "#F7F9FD", borderRadius: 3 }}>
-              <CampaignRoundedIcon sx={{ fontSize: 38, color: "#A0AEC0", mb: 1 }} />
-              <Typography fontWeight={700} color="#526780">Nothing published yet</Typography>
-              <Typography fontSize={13} color="#77869D" mt={1}>
-                Your announcements will appear here after you publish them.
-              </Typography>
+        <Paper elevation={0} sx={{ p: { xs: 2.5, sm: 3 }, borderRadius: 4, border: "1px solid #E5ECF5" }}>
+          <Stack direction="row" gap={1.5} alignItems="center" mb={3}>
+            <Box sx={{ p: 1.3, borderRadius: 3, bgcolor: "#EAF1FF", color: "#245BC0", display: "grid", placeItems: "center" }}>
+              <NotificationsActiveRoundedIcon />
             </Box>
-          ) : (
-            <Stack gap={2}>
-              {announcements.map((announcement) => (
-                <Box key={announcement.id} sx={{ p: 2.5, border: "1px solid #EDF1F7", borderRadius: 3 }}>
-                  <Stack direction="row" justifyContent="space-between" alignItems="flex-start" gap={1} mb={1}>
-                    <Typography fontWeight={800} color="#183454">{announcement.title}</Typography>
-                    <Chip size="small" label={announcement.audience} />
-                  </Stack>
-                  <Typography fontSize={13} lineHeight={1.9} color="#526780" sx={{ whiteSpace: "pre-wrap" }}>
-                    {announcement.body}
-                  </Typography>
-                  <Typography fontSize={11} color="#8A98AC" mt={2}>{announcement.createdAt}</Typography>
-                </Box>
-              ))}
-            </Stack>
-          )}
+            <Box>
+              <Typography fontWeight={850} color="#183454">Announcements</Typography>
+              <Typography fontSize={12} color="#77869D">Workplace news and updates</Typography>
+            </Box>
+          </Stack>
+          <ModuleEmptyState
+            icon={CampaignRoundedIcon}
+            title="No announcements"
+            description="Published workplace updates will appear here with their audience and publication details."
+          />
         </Paper>
       </Box>
     </Box>
