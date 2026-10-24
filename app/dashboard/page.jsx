@@ -22,6 +22,7 @@ import {
   Typography,
 } from "@mui/material";
 import DashboardRoundedIcon from "@mui/icons-material/DashboardRounded";
+import BusinessRoundedIcon from "@mui/icons-material/BusinessRounded";
 import GroupsRoundedIcon from "@mui/icons-material/GroupsRounded";
 import EventAvailableRoundedIcon from "@mui/icons-material/EventAvailableRounded";
 import CalendarMonthRoundedIcon from "@mui/icons-material/CalendarMonthRounded";
@@ -29,11 +30,9 @@ import PaymentsRoundedIcon from "@mui/icons-material/PaymentsRounded";
 import InsightsRoundedIcon from "@mui/icons-material/InsightsRounded";
 import SmartToyRoundedIcon from "@mui/icons-material/SmartToyRounded";
 import CampaignRoundedIcon from "@mui/icons-material/CampaignRounded";
-import BusinessRoundedIcon from "@mui/icons-material/BusinessRounded";
 import FactCheckRoundedIcon from "@mui/icons-material/FactCheckRounded";
 import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
-import PersonOutlineRoundedIcon from "@mui/icons-material/PersonOutlineRounded";
 import { getToken, getUser, logout } from "@/lib/auth";
 
 const drawerWidth = 250;
@@ -41,62 +40,70 @@ const drawerWidth = 250;
 const modules = [
   {
     title: "Organization Setup",
-    description: "Configure company details and organizational settings.",
+    description:
+      "Configure company information, departments, designations, leave types, and office rules.",
     icon: BusinessRoundedIcon,
+    number: "01",
   },
   {
-    title: "Employee Management",
-    description: "Create, view, and manage employee records.",
+    title: "Employees",
+    description:
+      "Manage employee records, search the directory, and view employee profiles.",
     icon: GroupsRoundedIcon,
+    number: "02",
   },
   {
     title: "Attendance",
-    description: "Manage employee check-in, check-out, and attendance.",
+    description:
+      "Handle daily check-in and check-out, attendance records, and corrections.",
     icon: EventAvailableRoundedIcon,
+    number: "03",
   },
   {
     title: "Leave Management",
-    description: "Submit leave requests and manage approval workflows.",
+    description:
+      "Apply for leave, check balances, and manage approval workflows.",
     icon: CalendarMonthRoundedIcon,
+    number: "04",
   },
   {
-    title: "Payroll & Payslips",
-    description: "Manage monthly payroll and employee payslips.",
+    title: "Payroll Lite",
+    description:
+      "Manage salary structures, monthly payroll runs, and employee payslips.",
     icon: PaymentsRoundedIcon,
+    number: "05",
   },
   {
-    title: "Analytics & Reports",
-    description: "Review workforce information and business reports.",
+    title: "Dashboards & Analytics",
+    description:
+      "Explore workforce metrics, attendance trends, leave utilization, and insights.",
     icon: InsightsRoundedIcon,
+    number: "06",
   },
   {
     title: "AI Assistant",
-    description: "Ask questions about authorized company information.",
+    description:
+      "Ask questions about company data and get assistance with HR policies and leave.",
     icon: SmartToyRoundedIcon,
+    number: "07",
   },
   {
-    title: "Announcements",
-    description: "Share company updates and important announcements.",
+    title: "Comms & Audit",
+    description:
+      "Manage company announcements, notifications, and recorded system activity.",
     icon: CampaignRoundedIcon,
-  },
-  {
-    title: "Audit Log",
-    description: "Review system activity and recorded actions.",
-    icon: FactCheckRoundedIcon,
+    number: "08",
   },
 ];
 
 export default function DashboardPage() {
   const router = useRouter();
-
   const [user, setUser] = useState(null);
   const [checkingAuth, setCheckingAuth] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
-    const token = getToken();
-
-    if (!token) {
+    if (!getToken()) {
       router.replace("/login");
       return;
     }
@@ -114,154 +121,145 @@ export default function DashboardPage() {
     user?.name ||
     user?.fullName ||
     user?.email?.split("@")[0] ||
-    "HCM Lite User";
+    "Welcome";
 
   const displayEmail = user?.email || "Signed-in account";
-  const displayRole = user?.role || user?.userType || "Authenticated user";
+  const displayRole = user?.role || user?.userType || "User";
 
-  const sidebarContent = (
-    <Box
-      sx={{
-        height: "100%",
-        display: "flex",
-        flexDirection: "column",
-        bgcolor: "#0f172a",
-        color: "white",
-      }}
-    >
-      <Box sx={{ px: 3, py: 3 }}>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-          <Avatar
-            variant="rounded"
+  function sidebarContent() {
+    return (
+      <Box
+        sx={{
+          height: "100%",
+          display: "flex",
+          flexDirection: "column",
+          bgcolor: "#111827",
+          color: "#fff",
+        }}
+      >
+        <Box sx={{ px: 3, py: 3 }}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+            <Avatar
+              variant="rounded"
+              sx={{
+                bgcolor: "#2563eb",
+                width: 44,
+                height: 44,
+                borderRadius: 2.5,
+                fontWeight: 800,
+                fontSize: 22,
+              }}
+            >
+              H
+            </Avatar>
+            <Box>
+              <Typography fontSize={20} fontWeight={800}>
+                HCM Lite
+              </Typography>
+              <Typography fontSize={11} sx={{ color: "#9ca3af" }}>
+                People management
+              </Typography>
+            </Box>
+          </Box>
+        </Box>
+
+        <Divider sx={{ borderColor: "#273449" }} />
+
+        <Box sx={{ px: 2, py: 2 }}>
+          <Typography
             sx={{
-              bgcolor: "#2563eb",
-              width: 42,
-              height: 42,
-              fontWeight: 800,
-              borderRadius: 2,
+              color: "#9ca3af",
+              fontSize: 11,
+              fontWeight: 700,
+              letterSpacing: 1.2,
+              px: 1.5,
+              mb: 1,
             }}
           >
-            H
-          </Avatar>
+            WORKSPACE
+          </Typography>
 
-          <Box>
-            <Typography fontWeight={800} fontSize={20}>
-              HCM Lite
+          <List disablePadding>
+            <ListItemButton
+              selected
+              sx={{
+                borderRadius: 2,
+                color: "#fff",
+                "&.Mui-selected": { bgcolor: "#1d4ed8" },
+                "&.Mui-selected:hover": { bgcolor: "#1e40af" },
+              }}
+            >
+              <ListItemIcon sx={{ minWidth: 38, color: "inherit" }}>
+                <DashboardRoundedIcon />
+              </ListItemIcon>
+              <ListItemText
+                primary="Dashboard"
+                primaryTypographyProps={{ fontSize: 14, fontWeight: 600 }}
+              />
+            </ListItemButton>
+          </List>
+
+          <Typography
+            sx={{
+              color: "#9ca3af",
+              fontSize: 11,
+              fontWeight: 700,
+              letterSpacing: 1.2,
+              px: 1.5,
+              mt: 3,
+              mb: 1,
+            }}
+          >
+            ACCOUNT
+          </Typography>
+
+          <List disablePadding>
+            <ListItemButton
+              onClick={handleLogout}
+              sx={{
+                borderRadius: 2,
+                color: "#d1d5db",
+                "&:hover": { bgcolor: "#273449", color: "#fff" },
+              }}
+            >
+              <ListItemIcon sx={{ minWidth: 38, color: "inherit" }}>
+                <LogoutRoundedIcon />
+              </ListItemIcon>
+              <ListItemText
+                primary="Log out"
+                primaryTypographyProps={{ fontSize: 14, fontWeight: 600 }}
+              />
+            </ListItemButton>
+          </List>
+        </Box>
+
+        <Box sx={{ mt: "auto", p: 2 }}>
+          <Box
+            sx={{
+              p: 2,
+              bgcolor: "#1f2937",
+              border: "1px solid #374151",
+              borderRadius: 3,
+            }}
+          >
+            <Typography fontSize={12} fontWeight={700}>
+              One people workspace
             </Typography>
-            <Typography fontSize={11} sx={{ color: "#94a3b8" }}>
-              Human Capital Management
+            <Typography
+              fontSize={11}
+              sx={{ mt: 0.5, color: "#9ca3af", lineHeight: 1.6 }}
+            >
+              HR workflows and AI-assisted insights in one place.
             </Typography>
           </Box>
         </Box>
       </Box>
-
-      <Divider sx={{ borderColor: "#263449" }} />
-
-      <Box sx={{ px: 2, py: 2 }}>
-        <Typography
-          sx={{
-            px: 1.5,
-            mb: 1,
-            color: "#94a3b8",
-            fontSize: 11,
-            fontWeight: 700,
-            letterSpacing: 1,
-          }}
-        >
-          WORKSPACE
-        </Typography>
-
-        <List disablePadding>
-          <ListItemButton
-            selected
-            sx={{
-              borderRadius: 2,
-              mb: 0.5,
-              color: "white",
-              "&.Mui-selected": {
-                bgcolor: "#1e40af",
-                color: "white",
-              },
-              "&.Mui-selected:hover": {
-                bgcolor: "#1d4ed8",
-              },
-            }}
-          >
-            <ListItemIcon sx={{ color: "inherit", minWidth: 38 }}>
-              <DashboardRoundedIcon />
-            </ListItemIcon>
-            <ListItemText
-              primary="Dashboard"
-              primaryTypographyProps={{ fontWeight: 600, fontSize: 14 }}
-            />
-          </ListItemButton>
-        </List>
-
-        <Typography
-          sx={{
-            px: 1.5,
-            mt: 3,
-            mb: 1,
-            color: "#94a3b8",
-            fontSize: 11,
-            fontWeight: 700,
-            letterSpacing: 1,
-          }}
-        >
-          ACCOUNT
-        </Typography>
-
-        <List disablePadding>
-          <ListItemButton
-            onClick={handleLogout}
-            sx={{
-              borderRadius: 2,
-              color: "#cbd5e1",
-              "&:hover": { bgcolor: "#1e293b", color: "white" },
-            }}
-          >
-            <ListItemIcon sx={{ color: "inherit", minWidth: 38 }}>
-              <LogoutRoundedIcon />
-            </ListItemIcon>
-            <ListItemText
-              primary="Log out"
-              primaryTypographyProps={{ fontSize: 14, fontWeight: 600 }}
-            />
-          </ListItemButton>
-        </List>
-      </Box>
-
-      <Box sx={{ mt: "auto", p: 2 }}>
-        <Box
-          sx={{
-            p: 2,
-            borderRadius: 3,
-            bgcolor: "#1e293b",
-            border: "1px solid #334155",
-          }}
-        >
-          <Typography fontSize={12} fontWeight={700}>
-            HCM Lite Workspace
-          </Typography>
-          <Typography fontSize={11} sx={{ mt: 0.5, color: "#94a3b8" }}>
-            Your people operations, in one place.
-          </Typography>
-        </Box>
-      </Box>
-    </Box>
-  );
+    );
+  }
 
   if (checkingAuth) {
     return (
-      <Box
-        sx={{
-          minHeight: "100vh",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          bgcolor: "#f8fafc",
-        }}
-      >
+      <Box className="flex min-h-screen items-center justify-center bg-slate-50">
         <CircularProgress />
       </Box>
     );
@@ -269,10 +267,7 @@ export default function DashboardPage() {
 
   return (
     <Box sx={{ display: "flex", minHeight: "100vh", bgcolor: "#f8fafc" }}>
-      <Box
-        component="nav"
-        sx={{ width: { md: drawerWidth }, flexShrink: { md: 0 } }}
-      >
+      <Box component="nav" sx={{ width: { md: drawerWidth }, flexShrink: 0 }}>
         <Drawer
           variant="temporary"
           open={mobileMenuOpen}
@@ -280,18 +275,14 @@ export default function DashboardPage() {
           ModalProps={{ keepMounted: true }}
           sx={{
             display: { xs: "block", md: "none" },
-            "& .MuiDrawer-paper": {
-              width: drawerWidth,
-              border: 0,
-            },
+            "& .MuiDrawer-paper": { width: drawerWidth, border: 0 },
           }}
         >
-          {sidebarContent}
+          {sidebarContent()}
         </Drawer>
 
         <Drawer
           variant="permanent"
-          open
           sx={{
             display: { xs: "none", md: "block" },
             "& .MuiDrawer-paper": {
@@ -300,8 +291,9 @@ export default function DashboardPage() {
               boxSizing: "border-box",
             },
           }}
+          open
         >
-          {sidebarContent}
+          {sidebarContent()}
         </Drawer>
       </Box>
 
@@ -315,37 +307,36 @@ export default function DashboardPage() {
             alignItems: "center",
             justifyContent: "space-between",
             gap: 2,
-            bgcolor: "white",
+            bgcolor: "#fff",
             borderBottom: "1px solid #e2e8f0",
           }}
         >
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <IconButton
               onClick={() => setMobileMenuOpen(true)}
+              aria-label="Open navigation"
               sx={{ display: { xs: "inline-flex", md: "none" } }}
-              aria-label="Open navigation menu"
             >
               <MenuRoundedIcon />
             </IconButton>
-
             <Box>
-              <Typography fontWeight={800} color="#0f172a" fontSize={20}>
+              <Typography fontWeight={800} fontSize={20} color="#0f172a">
                 Dashboard
               </Typography>
-              <Typography color="text.secondary" fontSize={12}>
-                Your HCM Lite workspace overview
+              <Typography fontSize={12} color="text.secondary">
+                Human Capital Management
               </Typography>
             </Box>
           </Box>
 
           <Button
-            onClick={handleLogout}
-            startIcon={<LogoutRoundedIcon />}
             variant="outlined"
+            startIcon={<LogoutRoundedIcon />}
+            onClick={handleLogout}
             sx={{
-              textTransform: "none",
-              borderRadius: 2,
               display: { xs: "none", sm: "inline-flex" },
+              borderRadius: 2,
+              textTransform: "none",
             }}
           >
             Log out
@@ -358,52 +349,60 @@ export default function DashboardPage() {
               p: { xs: 3, sm: 4 },
               mb: 4,
               borderRadius: 4,
-              color: "white",
+              color: "#fff",
               background:
-                "linear-gradient(120deg, #1e3a8a 0%, #2563eb 65%, #0891b2 100%)",
-              boxShadow: "0 14px 35px rgba(37,99,235,0.16)",
+                "linear-gradient(120deg, #1e3a8a 0%, #2563eb 60%, #4f46e5 100%)",
+              boxShadow: "0 16px 40px rgba(37,99,235,0.16)",
             }}
           >
-            <Typography sx={{ color: "#dbeafe", fontSize: 13, mb: 1 }}>
-              WELCOME TO HCM LITE
+            <Typography
+              sx={{
+                color: "#bfdbfe",
+                fontWeight: 700,
+                fontSize: 12,
+                letterSpacing: 1.5,
+                mb: 1,
+              }}
+            >
+              HCM LITE WORKSPACE
             </Typography>
 
             <Typography
-              variant="h4"
-              fontWeight={800}
-              sx={{ fontSize: { xs: 25, sm: 32 }, mb: 1 }}
+              sx={{
+                fontWeight: 800,
+                fontSize: { xs: 26, sm: 34 },
+                mb: 1,
+              }}
             >
               Welcome, {displayName}
             </Typography>
 
-            <Typography sx={{ color: "#e0f2fe", maxWidth: 650 }}>
-              Manage people operations through one workspace for employees,
-              attendance, leave, payroll, announcements, and AI-assisted
-              insights.
-            </Typography>
-
-            <Box
+            <Typography
               sx={{
-                mt: 3,
-                display: "flex",
-                gap: 1,
-                flexWrap: "wrap",
+                color: "#dbeafe",
+                maxWidth: 680,
+                lineHeight: 1.8,
+                fontSize: 14,
               }}
             >
+              Manage employees, attendance, leave requests, payroll, and
+              workforce insights. Use the AI assistant to help answer HR
+              questions from authorized company data.
+            </Typography>
+
+            <Box sx={{ mt: 3, display: "flex", gap: 1, flexWrap: "wrap" }}>
               <Chip
-                icon={<PersonOutlineRoundedIcon />}
-                label={displayRole}
+                label={`Role: ${displayRole}`}
                 sx={{
-                  bgcolor: "rgba(255,255,255,0.14)",
-                  color: "white",
-                  "& .MuiChip-icon": { color: "white" },
+                  color: "#fff",
+                  bgcolor: "rgba(255,255,255,0.15)",
                 }}
               />
               <Chip
-                label="Authenticated session"
+                label="HCM Lite"
                 sx={{
-                  bgcolor: "rgba(255,255,255,0.14)",
-                  color: "white",
+                  color: "#fff",
+                  bgcolor: "rgba(255,255,255,0.15)",
                 }}
               />
             </Box>
@@ -411,17 +410,17 @@ export default function DashboardPage() {
 
           <Box sx={{ mb: 3 }}>
             <Typography variant="h5" fontWeight={800} color="#0f172a">
-              Your workspace
+              HR workspace modules
             </Typography>
-            <Typography color="text.secondary" sx={{ mt: 0.5 }}>
-              Explore the modules planned for your organization.
+            <Typography sx={{ color: "#64748b", mt: 0.5, fontSize: 14 }}>
+              Access the core areas of your Human Capital Management system.
             </Typography>
           </Box>
 
           <Alert severity="info" sx={{ mb: 3, borderRadius: 2 }}>
-            The frontend workspace is being built module by module. Live
-            employee, attendance, and payroll information will appear after
-            the corresponding backend APIs are connected.
+            Your workspace is being built module by module. Live figures will
+            be displayed when their backend APIs are connected; no sample
+            employee or payroll data is being shown.
           </Alert>
 
           <Box
@@ -444,53 +443,76 @@ export default function DashboardPage() {
                   elevation={0}
                   sx={{
                     height: "100%",
-                    borderRadius: 3,
                     border: "1px solid #e2e8f0",
-                    transition: "transform 160ms ease, box-shadow 160ms ease",
+                    borderRadius: 3,
+                    transition: "all 180ms ease",
                     "&:hover": {
                       transform: "translateY(-3px)",
-                      boxShadow: "0 12px 28px rgba(15,23,42,0.07)",
+                      borderColor: "#bfdbfe",
+                      boxShadow: "0 14px 30px rgba(15,23,42,0.07)",
                     },
                   }}
                 >
                   <CardContent sx={{ p: 3 }}>
                     <Box
                       sx={{
-                        width: 48,
-                        height: 48,
                         display: "flex",
                         alignItems: "center",
-                        justifyContent: "center",
-                        borderRadius: 2.5,
-                        bgcolor: "#eff6ff",
-                        color: "#1d4ed8",
+                        justifyContent: "space-between",
                         mb: 2.5,
                       }}
                     >
-                      <ModuleIcon fontSize="medium" />
+                      <Avatar
+                        variant="rounded"
+                        sx={{
+                          width: 48,
+                          height: 48,
+                          bgcolor: "#eff6ff",
+                          color: "#2563eb",
+                          borderRadius: 2.5,
+                        }}
+                      >
+                        <ModuleIcon />
+                      </Avatar>
+                      <Typography
+                        sx={{
+                          color: "#cbd5e1",
+                          fontWeight: 800,
+                          fontSize: 20,
+                        }}
+                      >
+                        {module.number}
+                      </Typography>
                     </Box>
 
-                    <Typography fontWeight={750} fontSize={17} color="#0f172a">
+                    <Typography
+                      sx={{ fontWeight: 750, color: "#0f172a", fontSize: 17 }}
+                    >
                       {module.title}
                     </Typography>
 
                     <Typography
-                      color="text.secondary"
-                      fontSize={13}
-                      sx={{ mt: 1, minHeight: 42, lineHeight: 1.7 }}
+                      sx={{
+                        mt: 1,
+                        mb: 2.5,
+                        minHeight: 62,
+                        color: "#64748b",
+                        fontSize: 13,
+                        lineHeight: 1.8,
+                      }}
                     >
                       {module.description}
                     </Typography>
 
-                    <Divider sx={{ my: 2 }} />
+                    <Divider sx={{ mb: 2 }} />
 
                     <Chip
-                      label="In development"
+                      label="Coming soon"
                       size="small"
                       variant="outlined"
                       sx={{
                         borderColor: "#cbd5e1",
-                        color: "#475569",
+                        color: "#64748b",
                         fontSize: 11,
                       }}
                     />
@@ -504,26 +526,23 @@ export default function DashboardPage() {
             sx={{
               mt: 4,
               p: 2.5,
-              borderRadius: 3,
-              bgcolor: "white",
+              bgcolor: "#fff",
               border: "1px solid #e2e8f0",
+              borderRadius: 3,
             }}
           >
             <Typography fontWeight={700} color="#0f172a">
-              Signed-in account
+              Account information
             </Typography>
-            <Typography color="text.secondary" fontSize={14} sx={{ mt: 1 }}>
+            <Typography sx={{ mt: 1, fontSize: 14, color: "#64748b" }}>
               {displayEmail}
             </Typography>
           </Box>
 
           <Typography
-            color="text.secondary"
-            fontSize={12}
-            textAlign="center"
-            sx={{ mt: 4 }}
+            sx={{ mt: 4, textAlign: "center", color: "#94a3b8", fontSize: 12 }}
           >
-            HCM Lite · Human Capital Management System
+            HCM Lite · AI-assisted Human Capital Management
           </Typography>
         </Box>
       </Box>

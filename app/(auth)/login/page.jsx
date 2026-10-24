@@ -2,18 +2,18 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
+  Alert,
   Box,
   Button,
+  CircularProgress,
   Container,
+  InputAdornment,
   Paper,
   TextField,
   Typography,
-  Alert,
-  CircularProgress,
-  InputAdornment,
 } from "@mui/material";
 import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
@@ -34,18 +34,15 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      // Keep the existing backend endpoint and payload unchanged.
       const result = await apiRequest("/auth/login", {
         method: "POST",
         body: JSON.stringify({ email, password }),
       });
 
-      // Save the returned token using your auth.js helper.
       saveSession(result);
-
       router.replace("/dashboard");
     } catch (err) {
-      setError(err.message || "Unable to log in. Please try again.");
+      setError(err.message || "Login failed. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -53,45 +50,34 @@ export default function LoginPage() {
 
   return (
     <Box
+      className="flex min-h-screen items-center justify-center px-4 py-10"
       sx={{
-        minHeight: "100vh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        py: 4,
-        px: 2,
         background:
-          "linear-gradient(135deg, #eff6ff 0%, #f8fafc 55%, #ecfeff 100%)",
+          "radial-gradient(circle at top left, #dbeafe 0, transparent 40%), linear-gradient(135deg, #f8fafc, #eef2ff)",
       }}
     >
       <Container maxWidth="sm">
-        <Box sx={{ textAlign: "center", mb: 3 }}>
+        <Box className="mb-7 text-center">
           <Box
+            className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl text-2xl font-extrabold text-white"
             sx={{
-              width: 58,
-              height: 58,
-              mx: "auto",
-              mb: 1.5,
-              borderRadius: 3,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              bgcolor: "#1d4ed8",
-              color: "white",
-              fontSize: 25,
-              fontWeight: 800,
-              boxShadow: "0 8px 24px rgba(29,78,216,0.22)",
+              background: "linear-gradient(135deg, #2563eb, #4f46e5)",
+              boxShadow: "0 10px 25px rgba(37,99,235,0.25)",
             }}
           >
             H
           </Box>
 
-          <Typography variant="h4" fontWeight={800} color="#0f172a">
+          <Typography
+            variant="h4"
+            className="font-extrabold tracking-tight"
+            sx={{ color: "#0f172a", fontWeight: 800 }}
+          >
             HCM Lite
           </Typography>
 
-          <Typography color="text.secondary" sx={{ mt: 1 }}>
-            Human Capital Management, made simpler.
+          <Typography sx={{ color: "#64748b", mt: 1 }}>
+            AI-assisted Human Capital Management
           </Typography>
         </Box>
 
@@ -101,19 +87,23 @@ export default function LoginPage() {
             p: { xs: 3, sm: 4 },
             borderRadius: 4,
             border: "1px solid #e2e8f0",
-            boxShadow: "0 20px 60px rgba(15,23,42,0.08)",
+            backgroundColor: "rgba(255,255,255,0.94)",
+            boxShadow: "0 24px 70px rgba(15,23,42,0.09)",
           }}
         >
-          <Typography variant="h5" fontWeight={750} color="#0f172a">
+          <Typography
+            variant="h5"
+            sx={{ fontWeight: 800, color: "#0f172a" }}
+          >
             Welcome back
           </Typography>
 
-          <Typography color="text.secondary" sx={{ mt: 1, mb: 3 }}>
-            Log in to access your HCM Lite workspace.
+          <Typography sx={{ color: "#64748b", mt: 1, mb: 3 }}>
+            Sign in to access your people management workspace.
           </Typography>
 
           {error && (
-            <Alert severity="error" sx={{ mb: 2 }}>
+            <Alert severity="error" sx={{ mb: 2, borderRadius: 2 }}>
               {error}
             </Alert>
           )}
@@ -122,8 +112,7 @@ export default function LoginPage() {
             <Typography
               component="label"
               htmlFor="login-email"
-              fontWeight={600}
-              fontSize={14}
+              sx={{ display: "block", mb: 0.5, fontWeight: 600, fontSize: 14 }}
             >
               Email address
             </Typography>
@@ -135,10 +124,9 @@ export default function LoginPage() {
               placeholder="you@company.com"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
-              required
               autoComplete="email"
-              margin="dense"
-              sx={{ mb: 2 }}
+              required
+              sx={{ mb: 2.5 }}
               slotProps={{
                 input: {
                   startAdornment: (
@@ -153,8 +141,7 @@ export default function LoginPage() {
             <Typography
               component="label"
               htmlFor="login-password"
-              fontWeight={600}
-              fontSize={14}
+              sx={{ display: "block", mb: 0.5, fontWeight: 600, fontSize: 14 }}
             >
               Password
             </Typography>
@@ -166,9 +153,8 @@ export default function LoginPage() {
               placeholder="Enter your password"
               value={password}
               onChange={(event) => setPassword(event.target.value)}
-              required
               autoComplete="current-password"
-              margin="dense"
+              required
               sx={{ mb: 3 }}
               slotProps={{
                 input: {
@@ -187,32 +173,34 @@ export default function LoginPage() {
               variant="contained"
               disabled={loading}
               sx={{
-                py: 1.4,
-                borderRadius: 2,
+                py: 1.5,
+                borderRadius: 2.5,
                 textTransform: "none",
-                fontSize: 16,
                 fontWeight: 700,
-                bgcolor: "#1d4ed8",
-                "&:hover": { bgcolor: "#1e40af" },
+                fontSize: 15,
+                background: "linear-gradient(90deg, #2563eb, #4f46e5)",
+                boxShadow: "none",
+                "&:hover": {
+                  background: "linear-gradient(90deg, #1d4ed8, #4338ca)",
+                  boxShadow: "0 8px 18px rgba(37,99,235,0.2)",
+                },
               }}
             >
               {loading ? (
-                <CircularProgress size={24} color="inherit" />
+                <CircularProgress size={23} color="inherit" />
               ) : (
-                "Log in"
+                "Sign in to HCM Lite"
               )}
             </Button>
           </Box>
 
-          <Typography textAlign="center" sx={{ mt: 3 }} color="text.secondary">
+          <Typography
+            sx={{ mt: 3, textAlign: "center", color: "#64748b", fontSize: 14 }}
+          >
             Don&apos;t have an account?{" "}
             <Link
               href="/signup"
-              style={{
-                color: "#1d4ed8",
-                fontWeight: 700,
-                textDecoration: "none",
-              }}
+              className="font-bold text-blue-700 no-underline hover:text-indigo-700"
             >
               Create account
             </Link>
@@ -220,12 +208,9 @@ export default function LoginPage() {
         </Paper>
 
         <Typography
-          textAlign="center"
-          color="text.secondary"
-          fontSize={12}
-          sx={{ mt: 3 }}
+          sx={{ mt: 3, textAlign: "center", color: "#94a3b8", fontSize: 12 }}
         >
-          HCM Lite · Human Capital Management System
+          HCM Lite · Admin, HR and Employee workspace
         </Typography>
       </Container>
     </Box>

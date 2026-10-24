@@ -24,33 +24,24 @@ export default function SignupPage() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(event) {
     event.preventDefault();
     setError("");
-
-    if (password !== confirmPassword) {
-      setError("Passwords do not match.");
-      return;
-    }
-
     setLoading(true);
 
     try {
-      // Keep the existing backend endpoint and payload unchanged.
       const result = await apiRequest("/auth/sign-up", {
         method: "POST",
         body: JSON.stringify({ email, password }),
       });
 
-      // Preserve the existing signup flow: success message, then login.
-      window.alert(result.message || "Account created successfully");
+      window.alert(result.message || "Account created successfully.");
       router.push("/login");
     } catch (err) {
-      setError(err.message || "Unable to create your account.");
+      setError(err.message || "Signup failed. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -58,45 +49,33 @@ export default function SignupPage() {
 
   return (
     <Box
+      className="flex min-h-screen items-center justify-center px-4 py-10"
       sx={{
-        minHeight: "100vh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        py: 4,
-        px: 2,
         background:
-          "linear-gradient(135deg, #eff6ff 0%, #f8fafc 55%, #ecfeff 100%)",
+          "radial-gradient(circle at top left, #dbeafe 0, transparent 40%), linear-gradient(135deg, #f8fafc, #eef2ff)",
       }}
     >
       <Container maxWidth="sm">
-        <Box sx={{ textAlign: "center", mb: 3 }}>
+        <Box className="mb-7 text-center">
           <Box
+            className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl text-2xl font-extrabold text-white"
             sx={{
-              width: 58,
-              height: 58,
-              mx: "auto",
-              mb: 1.5,
-              borderRadius: 3,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              bgcolor: "#1d4ed8",
-              color: "white",
-              fontSize: 25,
-              fontWeight: 800,
-              boxShadow: "0 8px 24px rgba(29,78,216,0.22)",
+              background: "linear-gradient(135deg, #2563eb, #4f46e5)",
+              boxShadow: "0 10px 25px rgba(37,99,235,0.25)",
             }}
           >
             H
           </Box>
 
-          <Typography variant="h4" fontWeight={800} color="#0f172a">
+          <Typography
+            variant="h4"
+            sx={{ color: "#0f172a", fontWeight: 800 }}
+          >
             HCM Lite
           </Typography>
 
-          <Typography color="text.secondary" sx={{ mt: 1 }}>
-            Set up your account to get started.
+          <Typography sx={{ color: "#64748b", mt: 1 }}>
+            AI-assisted Human Capital Management
           </Typography>
         </Box>
 
@@ -106,19 +85,23 @@ export default function SignupPage() {
             p: { xs: 3, sm: 4 },
             borderRadius: 4,
             border: "1px solid #e2e8f0",
-            boxShadow: "0 20px 60px rgba(15,23,42,0.08)",
+            backgroundColor: "rgba(255,255,255,0.94)",
+            boxShadow: "0 24px 70px rgba(15,23,42,0.09)",
           }}
         >
-          <Typography variant="h5" fontWeight={750} color="#0f172a">
-            Create an account
+          <Typography
+            variant="h5"
+            sx={{ fontWeight: 800, color: "#0f172a" }}
+          >
+            Create your account
           </Typography>
 
-          <Typography color="text.secondary" sx={{ mt: 1, mb: 3 }}>
-            Enter your details below.
+          <Typography sx={{ color: "#64748b", mt: 1, mb: 3 }}>
+            Enter your email and password to get started.
           </Typography>
 
           {error && (
-            <Alert severity="error" sx={{ mb: 2 }}>
+            <Alert severity="error" sx={{ mb: 2, borderRadius: 2 }}>
               {error}
             </Alert>
           )}
@@ -127,8 +110,7 @@ export default function SignupPage() {
             <Typography
               component="label"
               htmlFor="signup-email"
-              fontWeight={600}
-              fontSize={14}
+              sx={{ display: "block", mb: 0.5, fontWeight: 600, fontSize: 14 }}
             >
               Email address
             </Typography>
@@ -140,10 +122,9 @@ export default function SignupPage() {
               placeholder="you@company.com"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
-              required
               autoComplete="email"
-              margin="dense"
-              sx={{ mb: 2 }}
+              required
+              sx={{ mb: 2.5 }}
               slotProps={{
                 input: {
                   startAdornment: (
@@ -158,8 +139,7 @@ export default function SignupPage() {
             <Typography
               component="label"
               htmlFor="signup-password"
-              fontWeight={600}
-              fontSize={14}
+              sx={{ display: "block", mb: 0.5, fontWeight: 600, fontSize: 14 }}
             >
               Password
             </Typography>
@@ -171,40 +151,8 @@ export default function SignupPage() {
               placeholder="Create a password"
               value={password}
               onChange={(event) => setPassword(event.target.value)}
-              required
               autoComplete="new-password"
-              margin="dense"
-              sx={{ mb: 2 }}
-              slotProps={{
-                input: {
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <LockOutlinedIcon color="action" />
-                    </InputAdornment>
-                  ),
-                },
-              }}
-            />
-
-            <Typography
-              component="label"
-              htmlFor="signup-confirm-password"
-              fontWeight={600}
-              fontSize={14}
-            >
-              Confirm password
-            </Typography>
-
-            <TextField
-              id="signup-confirm-password"
-              fullWidth
-              type="password"
-              placeholder="Enter your password again"
-              value={confirmPassword}
-              onChange={(event) => setConfirmPassword(event.target.value)}
               required
-              autoComplete="new-password"
-              margin="dense"
               sx={{ mb: 3 }}
               slotProps={{
                 input: {
@@ -223,45 +171,44 @@ export default function SignupPage() {
               variant="contained"
               disabled={loading}
               sx={{
-                py: 1.4,
-                borderRadius: 2,
+                py: 1.5,
+                borderRadius: 2.5,
                 textTransform: "none",
-                fontSize: 16,
                 fontWeight: 700,
-                bgcolor: "#1d4ed8",
-                "&:hover": { bgcolor: "#1e40af" },
+                fontSize: 15,
+                background: "linear-gradient(90deg, #2563eb, #4f46e5)",
+                boxShadow: "none",
+                "&:hover": {
+                  background: "linear-gradient(90deg, #1d4ed8, #4338ca)",
+                  boxShadow: "0 8px 18px rgba(37,99,235,0.2)",
+                },
               }}
             >
               {loading ? (
-                <CircularProgress size={24} color="inherit" />
+                <CircularProgress size={23} color="inherit" />
               ) : (
                 "Create account"
               )}
             </Button>
           </Box>
 
-          <Typography textAlign="center" sx={{ mt: 3 }} color="text.secondary">
-            Already have an account?{" "}
+          <Typography
+            sx={{ mt: 3, textAlign: "center", color: "#64748b", fontSize: 14 }}
+          >
+            Already registered?{" "}
             <Link
               href="/login"
-              style={{
-                color: "#1d4ed8",
-                fontWeight: 700,
-                textDecoration: "none",
-              }}
+              className="font-bold text-blue-700 no-underline hover:text-indigo-700"
             >
-              Log in
+              Sign in
             </Link>
           </Typography>
         </Paper>
 
         <Typography
-          textAlign="center"
-          color="text.secondary"
-          fontSize={12}
-          sx={{ mt: 3 }}
+          sx={{ mt: 3, textAlign: "center", color: "#94a3b8", fontSize: 12 }}
         >
-          HCM Lite · Human Capital Management System
+          HCM Lite · Admin, HR and Employee workspace
         </Typography>
       </Container>
     </Box>
