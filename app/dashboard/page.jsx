@@ -1,250 +1,331 @@
 
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import {
-  Alert, Avatar, Box, Button, Card, CardContent, Chip,
-  CircularProgress, Divider, Drawer, IconButton, List,
-  ListItemButton, ListItemIcon, ListItemText, Typography,
-} from "@mui/material";
-import DashboardRoundedIcon from "@mui/icons-material/DashboardRounded";
-import BusinessRoundedIcon from "@mui/icons-material/BusinessRounded";
+import { Box, Paper, Typography, Chip } from "@mui/material";
+
+import FavoriteRoundedIcon from "@mui/icons-material/FavoriteRounded";
+import ApartmentRoundedIcon from "@mui/icons-material/ApartmentRounded";
 import GroupsRoundedIcon from "@mui/icons-material/GroupsRounded";
+import AccessTimeRoundedIcon from "@mui/icons-material/AccessTimeRounded";
 import EventAvailableRoundedIcon from "@mui/icons-material/EventAvailableRounded";
-import CalendarMonthRoundedIcon from "@mui/icons-material/CalendarMonthRounded";
 import PaymentsRoundedIcon from "@mui/icons-material/PaymentsRounded";
 import InsightsRoundedIcon from "@mui/icons-material/InsightsRounded";
-import SmartToyRoundedIcon from "@mui/icons-material/SmartToyRounded";
+import AutoAwesomeRoundedIcon from "@mui/icons-material/AutoAwesomeRounded";
 import CampaignRoundedIcon from "@mui/icons-material/CampaignRounded";
-import FavoriteRoundedIcon from "@mui/icons-material/FavoriteRounded";
-import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
-import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
-import { getToken, getUser, logout } from "@/lib/auth";
+import FactCheckRoundedIcon from "@mui/icons-material/FactCheckRounded";
 
-const drawerWidth = 250;
+import ModuleCard from "@/components/dashboard/ModuleCard";
+import DashboardHeader from "@/components/dashboard/DashboardHeader";
 
 const modules = [
-  { title: "Organization Setup", description: "Company details, departments, designations, holidays, and workplace rules.", icon: BusinessRoundedIcon },
-  { title: "Employees", description: "Employee directory, profile details, search, and workforce records.", icon: GroupsRoundedIcon },
-  { title: "Attendance", description: "Daily check-in and check-out, attendance status, and corrections.", icon: EventAvailableRoundedIcon },
-  { title: "Leave Management", description: "Leave requests, balances, history, and approval workflows.", icon: CalendarMonthRoundedIcon },
-  { title: "Payroll Lite", description: "Salary structures, monthly payroll processing, and payslips.", icon: PaymentsRoundedIcon },
-  { title: "Dashboards & Analytics", description: "Workforce metrics, attendance trends, and useful HR insights.", icon: InsightsRoundedIcon },
-  { title: "AI Assistant", description: "Ask HR questions and get assistance using authorized company data.", icon: SmartToyRoundedIcon },
-  { title: "Comms & Audit", description: "Company announcements, notifications, and system activity records.", icon: CampaignRoundedIcon },
+  {
+    title: "Organization Setup",
+    description:
+      "Set up company details, departments, designations, and workplace policies.",
+    href: "/dashboard/setup",
+    icon: ApartmentRoundedIcon,
+    category: "FOUNDATION",
+    tint: "#EAF1FF",
+    iconColor: "#245BC0",
+  },
+  {
+    title: "Employees",
+    description:
+      "Manage employee profiles, departments, and your workforce directory.",
+    href: "/dashboard/employees",
+    icon: GroupsRoundedIcon,
+    category: "PEOPLE",
+    tint: "#E5F8F1",
+    iconColor: "#168765",
+  },
+  {
+    title: "Attendance",
+    description:
+      "Manage daily attendance, working hours, check-ins, and check-outs.",
+    href: "/dashboard/attendance",
+    icon: AccessTimeRoundedIcon,
+    category: "DAILY WORK",
+    tint: "#FFF3E4",
+    iconColor: "#C57919",
+  },
+  {
+    title: "Leave Management",
+    description:
+      "Handle leave applications, balances, and approval workflows.",
+    href: "/dashboard/leave",
+    icon: EventAvailableRoundedIcon,
+    category: "TIME OFF",
+    tint: "#F1EAFE",
+    iconColor: "#7951C8",
+  },
+  {
+    title: "Payroll Lite",
+    description:
+      "Organize monthly payroll, salary calculations, and employee payslips.",
+    href: "/dashboard/payroll",
+    icon: PaymentsRoundedIcon,
+    category: "COMPENSATION",
+    tint: "#E5F6FF",
+    iconColor: "#147FA7",
+  },
+  {
+    title: "Dashboards & Analytics",
+    description:
+      "Explore workforce trends, attendance summaries, and HR insights.",
+    href: "/dashboard/analytics",
+    icon: InsightsRoundedIcon,
+    category: "INSIGHTS",
+    tint: "#E8F0FF",
+    iconColor: "#355ED8",
+  },
+  {
+    title: "AI Assistant",
+    description:
+      "Interact with an AI assistant for HR information and workplace policies.",
+    href: "/dashboard/ai-assistant",
+    icon: AutoAwesomeRoundedIcon,
+    category: "INTELLIGENCE",
+    tint: "#F0E9FF",
+    iconColor: "#7651C8",
+  },
+  {
+    title: "Communications",
+    description:
+      "Share company announcements and keep employees informed.",
+    href: "/dashboard/communications",
+    icon: CampaignRoundedIcon,
+    category: "UPDATES",
+    tint: "#FFECEF",
+    iconColor: "#C44E71",
+  },
+  {
+    title: "Audit Log",
+    description:
+      "Review important system activities and maintain accountability.",
+    href: "/dashboard/audit",
+    icon: FactCheckRoundedIcon,
+    category: "GOVERNANCE",
+    tint: "#E8F5F9",
+    iconColor: "#237B91",
+  },
 ];
 
 export default function DashboardPage() {
-  const router = useRouter();
-  const [user, setUser] = useState(null);
-  const [checkingAuth, setCheckingAuth] = useState(true);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  useEffect(() => {
-    if (!getToken()) {
-      router.replace("/login");
-      return;
-    }
-    setUser(getUser());
-    setCheckingAuth(false);
-  }, [router]);
-
-  function handleLogout() {
-    logout();
-    router.replace("/login");
-  }
-
-  const displayName =
-    user?.name || user?.fullName || user?.email?.split("@")[0] || "Welcome";
-  const displayEmail = user?.email || "Signed-in account";
-  const displayRole = user?.role || user?.userType || "User";
-
-  function sidebarContent() {
-    return (
-      <Box sx={{ height: "100%", display: "flex", flexDirection: "column", bgcolor: "#fff", color: "#0f172a" }}>
-        <Box sx={{ px: 3, py: 3 }}>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-            <Avatar variant="rounded" sx={{ width: 44, height: 44, borderRadius: 2.5, fontSize: 22, fontWeight: 900, background: "linear-gradient(135deg,#2563eb,#4f46e5)" }}>
-              H
-            </Avatar>
-            <Box>
-              <Typography fontSize={20} fontWeight={850}>HCM Lite</Typography>
-              <Typography fontSize={11} color="text.secondary">People first. Always.</Typography>
-            </Box>
-          </Box>
-        </Box>
-
-        <Divider sx={{ borderColor: "#eaf0f8" }} />
-
-        <Box sx={{ px: 2, py: 2 }}>
-          <Typography sx={{ color: "#94a3b8", fontSize: 10, fontWeight: 800, letterSpacing: 1.5, px: 1.5, mb: 1 }}>
-            YOUR WORKSPACE
-          </Typography>
-          <List disablePadding>
-            <ListItemButton selected sx={{ borderRadius: 2.5, color: "#1d4ed8", "&.Mui-selected": { bgcolor: "#eff6ff" }, "&.Mui-selected:hover": { bgcolor: "#dbeafe" } }}>
-              <ListItemIcon sx={{ minWidth: 38, color: "inherit" }}><DashboardRoundedIcon /></ListItemIcon>
-              <ListItemText primary="Dashboard" primaryTypographyProps={{ fontSize: 14, fontWeight: 700 }} />
-            </ListItemButton>
-          </List>
-
-          <Typography sx={{ color: "#94a3b8", fontSize: 10, fontWeight: 800, letterSpacing: 1.5, px: 1.5, mt: 3, mb: 1 }}>
-            ACCOUNT
-          </Typography>
-          <List disablePadding>
-            <ListItemButton onClick={handleLogout} sx={{ borderRadius: 2.5, color: "#64748b", "&:hover": { bgcolor: "#eff6ff", color: "#1d4ed8" } }}>
-              <ListItemIcon sx={{ minWidth: 38, color: "inherit" }}><LogoutRoundedIcon /></ListItemIcon>
-              <ListItemText primary="Log out" primaryTypographyProps={{ fontSize: 14, fontWeight: 600 }} />
-            </ListItemButton>
-          </List>
-        </Box>
-
-        <Box sx={{ mt: "auto", p: 2 }}>
-          <Box sx={{ p: 2.5, borderRadius: 3, background: "linear-gradient(135deg,#eff6ff,#f5f3ff)", border: "1px solid #dbeafe" }}>
-            <FavoriteRoundedIcon sx={{ color: "#3b82f6", fontSize: 19, mb: 1 }} />
-            <Typography fontSize={12} fontWeight={800} color="#1e3a8a">Built around people</Typography>
-            <Typography fontSize={11} sx={{ mt: 0.5, color: "#64748b", lineHeight: 1.7 }}>
-              Making everyday people operations feel a little easier.
-            </Typography>
-          </Box>
-        </Box>
-      </Box>
-    );
-  }
-
-  if (checkingAuth) {
-    return (
-      <Box className="flex min-h-screen items-center justify-center bg-blue-50">
-        <CircularProgress />
-      </Box>
-    );
-  }
-
   return (
-    <Box sx={{ display: "flex", minHeight: "100vh", bgcolor: "#f6f9ff" }}>
-      <Box component="nav" sx={{ width: { md: drawerWidth }, flexShrink: 0 }}>
-        <Drawer
-          variant="temporary"
-          open={mobileMenuOpen}
-          onClose={() => setMobileMenuOpen(false)}
-          ModalProps={{ keepMounted: true }}
-          sx={{ display: { xs: "block", md: "none" }, "& .MuiDrawer-paper": { width: drawerWidth, border: 0 } }}
-        >
-          {sidebarContent()}
-        </Drawer>
+    <Box sx={{ maxWidth: 1500, mx: "auto" }}>
+      {/* Page heading */}
+      <DashboardHeader
+        title="Your people, in focus."
+        description="Your people operations, thoughtfully organized in one workspace."
+      />
 
-        <Drawer
-          variant="permanent"
-          open
-          sx={{ display: { xs: "none", md: "block" }, "& .MuiDrawer-paper": { width: drawerWidth, border: 0, boxSizing: "border-box", borderRight: "1px solid #e8eef8" } }}
-        >
-          {sidebarContent()}
-        </Drawer>
-      </Box>
+      {/* Welcome banner */}
+      <Paper
+        elevation={0}
+        sx={{
+          position: "relative",
+          overflow: "hidden",
+          borderRadius: { xs: "22px", md: "28px" },
+          p: { xs: 2.5, sm: 3.5, lg: 4.5 },
+          mb: 4,
+          color: "#FFFFFF",
+          background:
+            "linear-gradient(115deg, #174A96 0%, #236BD0 55%, #5A9AF0 100%)",
+          boxShadow: "0 18px 45px rgba(36, 95, 181, 0.16)",
+        }}
+      >
+        {/* Decorative circles */}
+        <Box
+          sx={{
+            position: "absolute",
+            width: 260,
+            height: 260,
+            borderRadius: "50%",
+            border: "1px solid rgba(255,255,255,0.17)",
+            right: -75,
+            top: -115,
+          }}
+        />
 
-      <Box component="main" sx={{ flexGrow: 1, minWidth: 0 }}>
-        <Box sx={{ minHeight: 78, px: { xs: 2, sm: 4 }, py: 2, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 2, bgcolor: "rgba(255,255,255,0.9)", borderBottom: "1px solid #e8eef8" }}>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <IconButton onClick={() => setMobileMenuOpen(true)} aria-label="Open navigation" sx={{ display: { xs: "inline-flex", md: "none" } }}>
-              <MenuRoundedIcon />
-            </IconButton>
-            <Box>
-              <Typography fontWeight={850} fontSize={20} color="#0f172a">Your dashboard</Typography>
-              <Typography fontSize={12} color="#64748b">A little more clarity for your workday.</Typography>
-            </Box>
-          </Box>
+        <Box
+          sx={{
+            position: "absolute",
+            width: 190,
+            height: 190,
+            borderRadius: "50%",
+            border: "1px solid rgba(255,255,255,0.17)",
+            right: 20,
+            bottom: -130,
+          }}
+        />
 
-          <Button onClick={handleLogout} startIcon={<LogoutRoundedIcon />} variant="outlined" sx={{ display: { xs: "none", sm: "inline-flex" }, borderRadius: 2.5, textTransform: "none", borderColor: "#dbeafe", color: "#1d4ed8" }}>
-            Log out
-          </Button>
-        </Box>
+        <Box sx={{ position: "relative", zIndex: 1, maxWidth: 700 }}>
+          <Chip
+            icon={
+              <FavoriteRoundedIcon
+                sx={{ fontSize: "15px !important" }}
+              />
+            }
+            label="BUILT AROUND PEOPLE"
+            size="small"
+            sx={{
+              mb: 2,
+              bgcolor: "rgba(255,255,255,0.16)",
+              color: "#FFFFFF",
+              fontWeight: 800,
+              fontSize: 9.5,
+              letterSpacing: 1,
+              border: "1px solid rgba(255,255,255,0.18)",
+              "& .MuiChip-icon": { color: "#FFFFFF" },
+            }}
+          />
 
-        <Box sx={{ p: { xs: 2, sm: 4 } }}>
-          <Box sx={{ p: { xs: 3, sm: 4 }, mb: 4, borderRadius: 5, position: "relative", overflow: "hidden", color: "white", background: "linear-gradient(120deg,#1e40af 0%,#2563eb 55%,#6366f1 100%)", boxShadow: "0 18px 45px rgba(37,99,235,0.17)" }}>
-            <Box sx={{ position: "absolute", width: 220, height: 220, border: "1px solid rgba(255,255,255,0.16)", borderRadius: "50%", right: -70, top: -90 }} />
-            <Box sx={{ position: "absolute", width: 150, height: 150, border: "1px solid rgba(255,255,255,0.16)", borderRadius: "50%", right: -30, top: -55 }} />
+          <Typography
+            component="h2"
+            sx={{
+              fontSize: { xs: 26, sm: 35, lg: 41 },
+              lineHeight: 1.2,
+              fontWeight: 850,
+              letterSpacing: -1,
+              mb: 1.5,
+            }}
+          >
+            Great teams start with great people.
+          </Typography>
 
-            <Box sx={{ position: "relative" }}>
-              <Typography sx={{ color: "#dbeafe", fontSize: 11, fontWeight: 800, letterSpacing: 1.8, mb: 1.5 }}>
-                A WARM WELCOME TO YOUR WORKSPACE
-              </Typography>
-              <Typography sx={{ fontSize: { xs: 27, sm: 36 }, lineHeight: 1.2, fontWeight: 850, letterSpacing: "-0.8px" }}>
-                Hello, {displayName} 💙
-              </Typography>
-              <Typography sx={{ mt: 2, maxWidth: 650, color: "#e0e7ff", fontSize: 14, lineHeight: 1.9 }}>
-                Every person makes a difference. HCM Lite brings your people operations together, helping your organization make room for better work, thoughtful decisions, and stronger teams.
-              </Typography>
-              <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", mt: 3 }}>
-                <Chip label={`Role: ${displayRole}`} sx={{ bgcolor: "rgba(255,255,255,0.16)", color: "#fff", fontWeight: 600 }} />
-                <Chip label="People-first workspace" sx={{ bgcolor: "rgba(255,255,255,0.16)", color: "#fff" }} />
-              </Box>
-            </Box>
-          </Box>
-
-          <Box sx={{ mb: 3 }}>
-            <Typography sx={{ fontSize: 23, fontWeight: 850, color: "#0f172a", letterSpacing: "-0.5px" }}>
-              Everything in one place
-            </Typography>
-            <Typography sx={{ mt: 0.7, color: "#64748b", fontSize: 14 }}>
-              Choose a workspace area to explore the core HCM Lite features.
-            </Typography>
-          </Box>
-
-          <Alert severity="info" sx={{ mb: 3, borderRadius: 3, bgcolor: "#eff6ff", color: "#1e40af", "& .MuiAlert-icon": { color: "#2563eb" } }}>
-            These modules are being connected one by one. Live information will appear once the corresponding backend APIs are ready.
-          </Alert>
-
-          <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "repeat(2,minmax(0,1fr))", xl: "repeat(3,minmax(0,1fr))" }, gap: 2.5 }}>
-            {modules.map((module, index) => {
-              const ModuleIcon = module.icon;
-
-              return (
-                <Card
-                  key={module.title}
-                  elevation={0}
-                  sx={{
-                    borderRadius: 4,
-                    border: "1px solid #e5edf9",
-                    bgcolor: "#fff",
-                    transition: "transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease",
-                    "&:hover": { transform: "translateY(-4px)", borderColor: "#bfdbfe", boxShadow: "0 16px 34px rgba(37,99,235,0.09)" },
-                  }}
-                >
-                  <CardContent sx={{ p: 3 }}>
-                    <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 2.5 }}>
-                      <Avatar variant="rounded" sx={{ width: 50, height: 50, borderRadius: 3, bgcolor: index % 2 === 0 ? "#eff6ff" : "#eef2ff", color: "#2563eb" }}>
-                        <ModuleIcon />
-                      </Avatar>
-                      <Typography sx={{ color: "#dbeafe", fontWeight: 850, fontSize: 22 }}>
-                        0{index + 1}
-                      </Typography>
-                    </Box>
-
-                    <Typography sx={{ color: "#0f172a", fontSize: 16, fontWeight: 800 }}>
-                      {module.title}
-                    </Typography>
-                    <Typography sx={{ mt: 1, minHeight: 66, color: "#64748b", fontSize: 13, lineHeight: 1.8 }}>
-                      {module.description}
-                    </Typography>
-
-                    <Divider sx={{ my: 2, borderColor: "#eef2f7" }} />
-                    <Chip label="Coming soon" size="small" variant="outlined" sx={{ color: "#64748b", borderColor: "#dbeafe", bgcolor: "#f8fbff", fontSize: 11 }} />
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </Box>
-
-          <Box sx={{ mt: 4, p: 3, bgcolor: "#fff", border: "1px solid #e5edf9", borderRadius: 4 }}>
-            <Typography fontWeight={800} color="#0f172a">Your account</Typography>
-            <Typography sx={{ mt: 1, fontSize: 14, color: "#64748b" }}>{displayEmail}</Typography>
-          </Box>
-
-          <Typography sx={{ mt: 4, textAlign: "center", color: "#94a3b8", fontSize: 12 }}>
-            Made for people. Designed for better work. · HCM Lite
+          <Typography
+            sx={{
+              maxWidth: 600,
+              fontSize: { xs: 13, sm: 14 },
+              lineHeight: 1.9,
+              color: "#E6F0FF",
+            }}
+          >
+            Bring your people operations together in one place. From employee
+            management to attendance, leave, and payroll, HCM Lite helps
+            simplify the everyday work that keeps a team moving forward.
           </Typography>
         </Box>
+      </Paper>
+
+      {/* Module section heading */}
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: { xs: "flex-start", sm: "flex-end" },
+          flexWrap: "wrap",
+          gap: 1.5,
+          mb: 2.5,
+        }}
+      >
+        <Box>
+          <Typography
+            component="h2"
+            sx={{
+              fontSize: 22,
+              fontWeight: 850,
+              color: "#172F52",
+              letterSpacing: -0.4,
+            }}
+          >
+            Explore your workspace
+          </Typography>
+
+          <Typography
+            sx={{
+              mt: 0.7,
+              fontSize: 13,
+              color: "#75839A",
+              lineHeight: 1.8,
+            }}
+          >
+            Everything you need to support your people and manage daily HR work.
+          </Typography>
+        </Box>
+
+        <Chip
+          label={`${modules.length} modules`}
+          sx={{
+            bgcolor: "#E7F0FF",
+            color: "#2456A5",
+            fontWeight: 800,
+            fontSize: 11,
+            borderRadius: "10px",
+          }}
+        />
       </Box>
+
+      {/* Reusable module cards */}
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: {
+            xs: "1fr",
+            sm: "repeat(2, minmax(0, 1fr))",
+            xl: "repeat(3, minmax(0, 1fr))",
+          },
+          gap: 2,
+        }}
+      >
+        {modules.map((module) => (
+          <ModuleCard key={module.href} {...module} />
+        ))}
+      </Box>
+
+      {/* Closing message */}
+      <Paper
+        elevation={0}
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          gap: 1.5,
+          mt: 3,
+          p: { xs: 2, sm: 2.5 },
+          borderRadius: "18px",
+          bgcolor: "#FFFFFF",
+          border: "1px solid #E7EDF6",
+        }}
+      >
+        <Box
+          sx={{
+            width: 42,
+            height: 42,
+            minWidth: 42,
+            display: "grid",
+            placeItems: "center",
+            borderRadius: "13px",
+            bgcolor: "#EAF1FF",
+            color: "#245FC0",
+          }}
+        >
+          <FavoriteRoundedIcon />
+        </Box>
+
+        <Box>
+          <Typography
+            sx={{
+              fontSize: 13,
+              fontWeight: 800,
+              color: "#23466F",
+            }}
+          >
+            People first. Always.
+          </Typography>
+
+          <Typography
+            sx={{
+              mt: 0.4,
+              fontSize: 12,
+              color: "#75869E",
+              lineHeight: 1.8,
+            }}
+          >
+            A more organized workplace starts with taking care of the people
+            who make it possible.
+          </Typography>
+        </Box>
+      </Paper>
     </Box>
   );
 }
