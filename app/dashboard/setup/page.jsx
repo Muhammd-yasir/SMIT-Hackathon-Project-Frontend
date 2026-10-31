@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from "react";
@@ -13,15 +12,20 @@ import {
   Grid,
   Divider,
   InputAdornment,
+  Chip,
 } from "@mui/material";
 
-import BusinessRoundedIcon from "@mui/icons-material/BusinessRounded";
-import SaveRoundedIcon from "@mui/icons-material/SaveRounded";
-import ApartmentRoundedIcon from "@mui/icons-material/ApartmentRounded";
-import LanguageRoundedIcon from "@mui/icons-material/LanguageRounded";
-import EmailRoundedIcon from "@mui/icons-material/EmailRounded";
-import PhoneRoundedIcon from "@mui/icons-material/PhoneRounded";
-import LocationOnRoundedIcon from "@mui/icons-material/LocationOnRounded";
+import {
+  Building2,
+  Save,
+  Briefcase,
+  Globe,
+  Mail,
+  Phone,
+  MapPin,
+  Sparkles,
+  CheckCircle2,
+} from "lucide-react";
 
 const fieldSx = {
   "& .MuiOutlinedInput-root": {
@@ -32,25 +36,27 @@ const fieldSx = {
       borderColor: "#E2E8F0",
     },
     "&:hover fieldset": {
-      borderColor: "#9BB9ED",
+      borderColor: "#93B4F0",
+    },
+    "&.Mui-focused": {
+      backgroundColor: "#FFFFFF",
+      boxShadow: "0 0 0 4px rgba(37, 99, 235, 0.08)",
     },
     "&.Mui-focused fieldset": {
-      borderColor: "#2868CF",
+      borderColor: "#2563EB",
       borderWidth: "1.5px",
     },
   },
   "& .MuiInputLabel-root": {
     color: "#64748B",
+    fontWeight: 500,
   },
   "& .MuiInputLabel-root.Mui-focused": {
-    color: "#2868CF",
+    color: "#2563EB",
   },
 };
 
-const iconSx = {
-  color: "#8293AA",
-  fontSize: 19,
-};
+const iconSx = { color: "#94A3B8", width: 18, height: 18 };
 
 export default function SetupPage() {
   const [form, setForm] = useState({
@@ -63,21 +69,21 @@ export default function SetupPage() {
     address: "",
   });
 
+  const [saved, setSaved] = useState(false);
+
   const update = (key) => (event) => {
-    setForm((prev) => ({
-      ...prev,
-      [key]: event.target.value,
-    }));
+    setForm((prev) => ({ ...prev, [key]: event.target.value }));
+    setSaved(false);
+  };
+
+  const handleSave = (e) => {
+    e.preventDefault();
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2500);
   };
 
   return (
-    <Box
-      sx={{
-        maxWidth: 1200,
-        mx: "auto",
-        pb: 5,
-      }}
-    >
+    <Box sx={{ maxWidth: 1200, mx: "auto", pb: 5 }}>
       {/* Page Header */}
       <Stack
         direction={{ xs: "column", sm: "row" }}
@@ -89,17 +95,18 @@ export default function SetupPage() {
         <Stack direction="row" spacing={2} alignItems="center">
           <Box
             sx={{
-              width: 54,
-              height: 54,
-              borderRadius: "16px",
-              bgcolor: "#EAF1FF",
-              color: "#2868CF",
+              width: 52,
+              height: 52,
+              borderRadius: "14px",
+              background: "linear-gradient(135deg, #2563EB 0%, #3B82F6 100%)",
+              color: "#FFFFFF",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
+              boxShadow: "0 8px 20px rgba(37, 99, 235, 0.25)",
             }}
           >
-            <BusinessRoundedIcon sx={{ fontSize: 28 }} />
+            <Building2 size={26} strokeWidth={2.2} />
           </Box>
 
           <Box>
@@ -107,44 +114,32 @@ export default function SetupPage() {
               variant="h5"
               sx={{
                 fontWeight: 800,
-                color: "#173354",
+                color: "#0F172A",
                 letterSpacing: "-0.5px",
               }}
             >
               Organization Setup
             </Typography>
-
-            <Typography
-              sx={{
-                color: "#718096",
-                fontSize: 13.5,
-                mt: 0.5,
-              }}
-            >
+            <Typography sx={{ color: "#64748B", fontSize: 13.5, mt: 0.3 }}>
               Manage your organization's profile and business information.
             </Typography>
           </Box>
         </Stack>
 
-        <Box
+        <Chip
+          icon={<Sparkles size={14} style={{ color: "#2563EB" }} />}
+          label="Organization Profile"
           sx={{
-            px: 2,
-            py: 1,
-            borderRadius: "10px",
             bgcolor: "#EFF6FF",
+            color: "#1D4ED8",
+            fontWeight: 700,
+            fontSize: 12,
+            height: 32,
+            borderRadius: "10px",
             border: "1px solid #DBEAFE",
+            "& .MuiChip-icon": { ml: 1 },
           }}
-        >
-          <Typography
-            sx={{
-              fontSize: 12,
-              color: "#2868CF",
-              fontWeight: 700,
-            }}
-          >
-            Organization Profile
-          </Typography>
-        </Box>
+        />
       </Stack>
 
       <Grid container spacing={3}>
@@ -157,51 +152,51 @@ export default function SetupPage() {
               overflow: "hidden",
               p: 3.5,
               borderRadius: "20px",
-              minHeight: { xs: 250, md: 390 },
+              minHeight: { xs: 240, md: 400 },
               color: "#FFFFFF",
               background:
-                "linear-gradient(145deg, #173A75 0%, #245BC0 55%, #3479DF 100%)",
-              boxShadow: "0 12px 30px rgba(36, 91, 192, 0.16)",
+                "linear-gradient(160deg, #1E3A8A 0%, #2563EB 55%, #3B82F6 100%)",
+              boxShadow: "0 15px 35px rgba(37, 99, 235, 0.22)",
             }}
           >
             <Box
               sx={{
                 position: "absolute",
-                width: 190,
-                height: 190,
+                width: 200,
+                height: 200,
                 borderRadius: "50%",
-                bgcolor: "rgba(255,255,255,0.07)",
-                top: -75,
-                right: -65,
+                bgcolor: "rgba(255,255,255,0.06)",
+                top: -80,
+                right: -70,
               }}
             />
-
             <Box
               sx={{
                 position: "absolute",
-                width: 130,
-                height: 130,
+                width: 120,
+                height: 120,
                 borderRadius: "50%",
                 border: "1px solid rgba(255,255,255,0.12)",
-                bottom: -45,
-                right: -30,
+                bottom: -40,
+                right: -25,
               }}
             />
 
             <Box sx={{ position: "relative", zIndex: 1 }}>
               <Box
                 sx={{
-                  width: 48,
-                  height: 48,
-                  borderRadius: "14px",
-                  bgcolor: "rgba(255,255,255,0.15)",
+                  width: 46,
+                  height: 46,
+                  borderRadius: "12px",
+                  bgcolor: "rgba(255,255,255,0.16)",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
                   mb: 3,
+                  backdropFilter: "blur(6px)",
                 }}
               >
-                <ApartmentRoundedIcon sx={{ fontSize: 27 }} />
+                <Briefcase size={24} strokeWidth={2.2} />
               </Box>
 
               <Typography
@@ -209,7 +204,7 @@ export default function SetupPage() {
                   fontSize: 11,
                   fontWeight: 700,
                   letterSpacing: 1.5,
-                  color: "#C7DAFF",
+                  color: "#BFDBFE",
                   mb: 1.5,
                 }}
               >
@@ -218,7 +213,7 @@ export default function SetupPage() {
 
               <Typography
                 sx={{
-                  fontSize: 25,
+                  fontSize: 24,
                   fontWeight: 800,
                   lineHeight: 1.35,
                   maxWidth: 260,
@@ -231,44 +226,40 @@ export default function SetupPage() {
               <Typography
                 sx={{
                   mt: 2,
-                  color: "#DCE8FF",
+                  color: "#DBEAFE",
                   fontSize: 13.5,
-                  lineHeight: 1.9,
+                  lineHeight: 1.85,
                   maxWidth: 280,
                 }}
               >
                 Maintain your organization's essential information in one
-                centralized place. Keep your business profile organized
-                and accessible.
+                centralized place. Keep your business profile organized and
+                accessible.
               </Typography>
 
               <Divider
-                sx={{
-                  borderColor: "rgba(255,255,255,0.18)",
-                  my: 3,
-                }}
+                sx={{ borderColor: "rgba(255,255,255,0.18)", my: 3 }}
               />
 
               <Stack direction="row" spacing={1.5} alignItems="center">
                 <Box
                   sx={{
-                    width: 35,
-                    height: 35,
+                    width: 34,
+                    height: 34,
                     borderRadius: "10px",
-                    bgcolor: "rgba(255,255,255,0.13)",
+                    bgcolor: "rgba(255,255,255,0.14)",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
                   }}
                 >
-                  <BusinessRoundedIcon sx={{ fontSize: 19 }} />
+                  <CheckCircle2 size={17} strokeWidth={2.2} />
                 </Box>
-
                 <Box>
-                  <Typography fontSize={12} fontWeight={700}>
+                  <Typography fontSize={12.5} fontWeight={700}>
                     Organization Information
                   </Typography>
-                  <Typography fontSize={11} color="#C7DAFF">
+                  <Typography fontSize={11} color="#BFDBFE">
                     Business profile and contact details
                   </Typography>
                 </Box>
@@ -284,39 +275,24 @@ export default function SetupPage() {
             sx={{
               p: { xs: 2.5, sm: 3.5 },
               borderRadius: "20px",
-              border: "1px solid #E7EDF5",
-              boxShadow: "0 8px 30px rgba(23, 51, 84, 0.045)",
+              border: "1px solid #E2E8F0",
+              boxShadow: "0 6px 24px rgba(15, 23, 42, 0.04)",
               height: "100%",
             }}
           >
-            {/* Form Heading */}
             <Box mb={3}>
-              <Typography
-                sx={{
-                  fontSize: 18,
-                  fontWeight: 800,
-                  color: "#173354",
-                }}
-              >
+              <Typography sx={{ fontSize: 18, fontWeight: 800, color: "#0F172A" }}>
                 Organization Details
               </Typography>
-
-              <Typography
-                sx={{
-                  fontSize: 13,
-                  color: "#8492A6",
-                  mt: 0.7,
-                }}
-              >
+              <Typography sx={{ fontSize: 13, color: "#64748B", mt: 0.5 }}>
                 Provide the basic information about your organization.
               </Typography>
             </Box>
 
-            <Divider sx={{ mb: 3, borderColor: "#EDF1F6" }} />
+            <Divider sx={{ mb: 3, borderColor: "#F1F5F9" }} />
 
-            <Box component="form" onSubmit={(e) => e.preventDefault()}>
+            <Box component="form" onSubmit={handleSave}>
               <Grid container spacing={2.5}>
-                {/* Organization Name */}
                 <Grid item xs={12} sm={6}>
                   <TextField
                     label="Organization name"
@@ -328,14 +304,13 @@ export default function SetupPage() {
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">
-                          <ApartmentRoundedIcon sx={iconSx} />
+                          <Building2 style={iconSx} />
                         </InputAdornment>
                       ),
                     }}
                   />
                 </Grid>
 
-                {/* Industry */}
                 <Grid item xs={12} sm={6}>
                   <TextField
                     select
@@ -362,7 +337,6 @@ export default function SetupPage() {
                   </TextField>
                 </Grid>
 
-                {/* Email */}
                 <Grid item xs={12} sm={6}>
                   <TextField
                     label="Contact email"
@@ -375,14 +349,13 @@ export default function SetupPage() {
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">
-                          <EmailRoundedIcon sx={iconSx} />
+                          <Mail style={iconSx} />
                         </InputAdornment>
                       ),
                     }}
                   />
                 </Grid>
 
-                {/* Phone */}
                 <Grid item xs={12} sm={6}>
                   <TextField
                     label="Phone number"
@@ -394,14 +367,13 @@ export default function SetupPage() {
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">
-                          <PhoneRoundedIcon sx={iconSx} />
+                          <Phone style={iconSx} />
                         </InputAdornment>
                       ),
                     }}
                   />
                 </Grid>
 
-                {/* Website */}
                 <Grid item xs={12} sm={6}>
                   <TextField
                     label="Website"
@@ -413,14 +385,13 @@ export default function SetupPage() {
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">
-                          <LanguageRoundedIcon sx={iconSx} />
+                          <Globe style={iconSx} />
                         </InputAdornment>
                       ),
                     }}
                   />
                 </Grid>
 
-                {/* Timezone */}
                 <Grid item xs={12} sm={6}>
                   <TextField
                     select
@@ -437,7 +408,6 @@ export default function SetupPage() {
                   </TextField>
                 </Grid>
 
-                {/* Address */}
                 <Grid item xs={12}>
                   <TextField
                     label="Office address"
@@ -454,7 +424,7 @@ export default function SetupPage() {
                           position="start"
                           sx={{ alignSelf: "flex-start", mt: 1.7 }}
                         >
-                          <LocationOnRoundedIcon sx={iconSx} />
+                          <MapPin style={iconSx} />
                         </InputAdornment>
                       ),
                     }}
@@ -465,30 +435,44 @@ export default function SetupPage() {
               {/* Save Button */}
               <Stack
                 direction={{ xs: "column", sm: "row" }}
-                justifyContent="flex-end"
+                justifyContent="space-between"
                 alignItems={{ xs: "stretch", sm: "center" }}
+                spacing={2}
                 mt={3.5}
                 pt={2.5}
-                sx={{
-                  borderTop: "1px solid #EDF1F6",
-                }}
+                sx={{ borderTop: "1px solid #F1F5F9" }}
               >
+                <Stack direction="row" alignItems="center" spacing={1}>
+                  {saved && (
+                    <>
+                      <CheckCircle2 size={16} style={{ color: "#10B981" }} />
+                      <Typography
+                        sx={{ fontSize: 12.5, color: "#10B981", fontWeight: 600 }}
+                      >
+                        Changes saved successfully
+                      </Typography>
+                    </>
+                  )}
+                </Stack>
+
                 <Button
-                  type="button"
+                  type="submit"
                   variant="contained"
-                  startIcon={<SaveRoundedIcon />}
+                  startIcon={<Save size={17} strokeWidth={2.2} />}
                   sx={{
                     px: 3,
-                    py: 1.3,
+                    py: 1.2,
                     borderRadius: "11px",
                     textTransform: "none",
                     fontWeight: 700,
                     fontSize: 13.5,
-                    background: "linear-gradient(90deg, #245BC0, #3479DF)",
-                    boxShadow: "0 5px 14px rgba(36, 91, 192, 0.18)",
+                    background: "linear-gradient(90deg, #1D4ED8, #3B82F6)",
+                    boxShadow: "0 6px 16px rgba(37, 99, 235, 0.25)",
+                    transition: "all 0.2s ease",
                     "&:hover": {
-                      background: "#194DA8",
-                      boxShadow: "0 7px 18px rgba(36, 91, 192, 0.25)",
+                      background: "linear-gradient(90deg, #1E40AF, #2563EB)",
+                      boxShadow: "0 8px 22px rgba(37, 99, 235, 0.35)",
+                      transform: "translateY(-1px)",
                     },
                   }}
                 >
