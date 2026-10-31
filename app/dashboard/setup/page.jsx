@@ -14,6 +14,9 @@ import {
   InputAdornment,
   Avatar,
   LinearProgress,
+  Chip,
+  FormControlLabel,
+  Switch,
 } from "@mui/material";
 
 import {
@@ -28,10 +31,16 @@ import {
   Sparkles,
   CheckCircle2,
   ArrowRight,
-  Palette,
+  Calendar,
+  MapPinned,
+  Percent,
+  Layers,
   Users,
+  Compass,
+  Info,
 } from "lucide-react";
 
+/* ---------------------------------- styles --------------------------------- */
 const fieldSx = {
   "& .MuiOutlinedInput-root": {
     borderRadius: "12px",
@@ -54,6 +63,49 @@ const fieldSx = {
 
 const iconStyle = { color: "#94A3B8", width: 18, height: 18 };
 
+/* --------------------------------- helpers --------------------------------- */
+function SectionLabel({ icon, title, subtitle }) {
+  return (
+    <Stack direction="row" spacing={1.2} alignItems="center" mb={2}>
+      <Box
+        sx={{
+          width: 30,
+          height: 30,
+          borderRadius: "9px",
+          bgcolor: "#EFF6FF",
+          color: "#2563EB",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          flexShrink: 0,
+        }}
+      >
+        {icon}
+      </Box>
+      <Box>
+        <Typography
+          sx={{
+            fontSize: 12,
+            fontWeight: 800,
+            color: "#334155",
+            letterSpacing: 0.6,
+            textTransform: "uppercase",
+            lineHeight: 1.2,
+          }}
+        >
+          {title}
+        </Typography>
+        {subtitle && (
+          <Typography sx={{ fontSize: 11.5, color: "#94A3B8", mt: 0.2 }}>
+            {subtitle}
+          </Typography>
+        )}
+      </Box>
+    </Stack>
+  );
+}
+
+/* ---------------------------------- page ----------------------------------- */
 export default function SetupPage() {
   const [form, setForm] = useState({
     name: "",
@@ -63,12 +115,25 @@ export default function SetupPage() {
     website: "",
     timezone: "Asia/Karachi",
     address: "",
+    officeStart: "09:00",
+    graceMinutes: "15",
+    halfDayHours: "5",
+    weekend: "Sat-Sun",
+    officeLat: "",
+    officeLng: "",
+    radiusMeters: "150",
+    requireCamera: false,
   });
 
   const [saved, setSaved] = useState(false);
 
-  const update = (key) => (event) => {
-    setForm((prev) => ({ ...prev, [key]: event.target.value }));
+  const update = (key) => (e) => {
+    setForm((p) => ({ ...p, [key]: e.target.value }));
+    setSaved(false);
+  };
+
+  const toggle = (key) => (e) => {
+    setForm((p) => ({ ...p, [key]: e.target.checked }));
     setSaved(false);
   };
 
@@ -78,23 +143,32 @@ export default function SetupPage() {
     setTimeout(() => setSaved(false), 2600);
   };
 
-  const filledFields = Object.values(form).filter(
-    (v) => v && v.toString().trim() !== ""
-  ).length;
-  const completion = Math.round((filledFields / Object.keys(form).length) * 100);
+  /* completion (based on required-ish fields) */
+  const requiredKeys = [
+    "name",
+    "industry",
+    "email",
+    "phone",
+    "officeStart",
+    "graceMinutes",
+    "weekend",
+    "radiusMeters",
+  ];
+  const filled = requiredKeys.filter((k) => String(form[k] || "").trim()).length;
+  const completion = Math.round((filled / requiredKeys.length) * 100);
 
-  const initials = form.name
-    ? form.name
-        .split(" ")
-        .map((w) => w[0])
-        .slice(0, 2)
-        .join("")
-        .toUpperCase()
-    : "OR";
+  const initials =
+    form.name
+      .trim()
+      .split(/\s+/)
+      .map((w) => w[0])
+      .slice(0, 2)
+      .join("")
+      .toUpperCase() || "OR";
 
   return (
-    <Box sx={{ maxWidth: 1200, mx: "auto", pb: 6 }}>
-      {/* ============ HERO HEADER ============ */}
+    <Box sx={{ maxWidth: 1240, mx: "auto", pb: 6 }}>
+      {/* ============================= HERO ============================= */}
       <Paper
         elevation={0}
         sx={{
@@ -112,12 +186,12 @@ export default function SetupPage() {
         <Box
           sx={{
             position: "absolute",
-            width: 260,
-            height: 260,
+            width: 280,
+            height: 280,
             borderRadius: "50%",
             bgcolor: "rgba(255,255,255,0.06)",
-            top: -120,
-            right: -80,
+            top: -130,
+            right: -90,
           }}
         />
         <Box
@@ -128,7 +202,7 @@ export default function SetupPage() {
             borderRadius: "50%",
             border: "1px solid rgba(255,255,255,0.15)",
             bottom: -70,
-            right: 80,
+            right: 90,
           }}
         />
 
@@ -155,18 +229,19 @@ export default function SetupPage() {
             >
               <Building2 size={30} strokeWidth={2.2} />
             </Box>
+
             <Box>
               <Stack direction="row" alignItems="center" spacing={1} mb={0.5}>
-                <Sparkles size={14} style={{ color: "#BFDBFE" }} />
+                <Sparkles size={13} style={{ color: "#BFDBFE" }} />
                 <Typography
                   sx={{
                     fontSize: 11,
                     fontWeight: 700,
-                    letterSpacing: 1.5,
+                    letterSpacing: 1.6,
                     color: "#BFDBFE",
                   }}
                 >
-                  WORKSPACE SETTINGS
+                  FIRST-RUN · MODULE M2
                 </Typography>
               </Stack>
               <Typography
@@ -184,47 +259,59 @@ export default function SetupPage() {
                   fontSize: 13.5,
                   color: "#DBEAFE",
                   mt: 0.5,
-                  maxWidth: 420,
+                  maxWidth: 460,
                 }}
               >
-                Configure your organization profile. This information is
-                shown across your workspace and shared with your team.
+                Configure your company once — office hours, grace time, weekend,
+                and geofence. Every attendance, leave and payroll record in HCM
+                Lite is judged against these rules.
               </Typography>
             </Box>
           </Stack>
 
-          <Stack
-            direction="row"
-            spacing={1.5}
-            alignItems="center"
+          {/* Completion pill */}
+          <Box
             sx={{
-              bgcolor: "rgba(255,255,255,0.1)",
-              border: "1px solid rgba(255,255,255,0.18)",
+              bgcolor: "rgba(255,255,255,0.12)",
+              border: "1px solid rgba(255,255,255,0.2)",
+              borderRadius: "14px",
               px: 2,
               py: 1.5,
-              borderRadius: "14px",
               backdropFilter: "blur(6px)",
-              minWidth: 200,
+              minWidth: 220,
             }}
           >
-            <ShieldCheck size={20} style={{ color: "#BFDBFE" }} />
-            <Box>
-              <Typography sx={{ fontSize: 11, color: "#BFDBFE", fontWeight: 600 }}>
-                Status
+            <Stack direction="row" alignItems="center" spacing={1} mb={1}>
+              <ShieldCheck size={16} style={{ color: "#BFDBFE" }} />
+              <Typography sx={{ fontSize: 11, color: "#BFDBFE", fontWeight: 700, letterSpacing: 0.5 }}>
+                SETUP PROGRESS
               </Typography>
-              <Typography sx={{ fontSize: 13, fontWeight: 700 }}>
-                Admin Verified
-              </Typography>
-            </Box>
-          </Stack>
+            </Stack>
+            <LinearProgress
+              variant="determinate"
+              value={completion}
+              sx={{
+                height: 8,
+                borderRadius: 99,
+                bgcolor: "rgba(255,255,255,0.18)",
+                "& .MuiLinearProgress-bar": {
+                  borderRadius: 99,
+                  backgroundColor: "#FFFFFF",
+                },
+              }}
+            />
+            <Typography sx={{ fontSize: 12, fontWeight: 700, mt: 1 }}>
+              {completion}% configured
+            </Typography>
+          </Box>
         </Stack>
       </Paper>
 
       <Grid container spacing={3}>
-        {/* ============ LEFT SIDEBAR ============ */}
+        {/* ============================ SIDEBAR ============================ */}
         <Grid item xs={12} md={4}>
           <Stack spacing={2.5}>
-            {/* Profile Card */}
+            {/* Profile preview */}
             <Paper
               elevation={0}
               sx={{
@@ -250,10 +337,7 @@ export default function SetupPage() {
               >
                 {initials}
               </Avatar>
-
-              <Typography
-                sx={{ fontSize: 16, fontWeight: 800, color: "#0F172A" }}
-              >
+              <Typography sx={{ fontSize: 16, fontWeight: 800, color: "#0F172A" }}>
                 {form.name || "Your Organization"}
               </Typography>
               <Typography sx={{ fontSize: 12.5, color: "#64748B", mt: 0.3 }}>
@@ -262,101 +346,31 @@ export default function SetupPage() {
 
               <Divider sx={{ my: 2.5, borderColor: "#F1F5F9" }} />
 
-              <Box textAlign="left">
-                <Stack
-                  direction="row"
-                  justifyContent="space-between"
-                  alignItems="center"
-                  mb={1}
-                >
-                  <Typography
-                    sx={{ fontSize: 12.5, fontWeight: 700, color: "#334155" }}
-                  >
-                    Profile completion
-                  </Typography>
-                  <Typography
-                    sx={{ fontSize: 12.5, fontWeight: 800, color: "#2563EB" }}
-                  >
-                    {completion}%
-                  </Typography>
-                </Stack>
-                <LinearProgress
-                  variant="determinate"
-                  value={completion}
-                  sx={{
-                    height: 8,
-                    borderRadius: 99,
-                    bgcolor: "#EFF6FF",
-                    "& .MuiLinearProgress-bar": {
-                      borderRadius: 99,
-                      background:
-                        "linear-gradient(90deg, #2563EB, #60A5FA)",
-                    },
-                  }}
+              <Stack spacing={1.2} textAlign="left">
+                <InfoRow
+                  icon={<Clock size={14} />}
+                  label="Office start"
+                  value={form.officeStart || "—"}
                 />
-                <Typography sx={{ fontSize: 11.5, color: "#94A3B8", mt: 1 }}>
-                  Complete your profile to unlock full features.
-                </Typography>
-              </Box>
-            </Paper>
-
-            {/* Quick Info Card */}
-            <Paper
-              elevation={0}
-              sx={{
-                p: 2.5,
-                borderRadius: "20px",
-                border: "1px solid #E2E8F0",
-                bgcolor: "#F8FAFC",
-                boxShadow: "0 6px 24px rgba(15, 23, 42, 0.03)",
-              }}
-            >
-              <Stack direction="row" spacing={1.2} alignItems="center" mb={2}>
-                <Box
-                  sx={{
-                    width: 32,
-                    height: 32,
-                    borderRadius: "9px",
-                    bgcolor: "#EFF6FF",
-                    color: "#2563EB",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <Users size={17} strokeWidth={2.2} />
-                </Box>
-                <Typography
-                  sx={{ fontSize: 13.5, fontWeight: 800, color: "#0F172A" }}
-                >
-                  Why this matters
-                </Typography>
+                <InfoRow
+                  icon={<Percent size={14} />}
+                  label="Grace period"
+                  value={`${form.graceMinutes || 0} min`}
+                />
+                <InfoRow
+                  icon={<Calendar size={14} />}
+                  label="Weekend"
+                  value={form.weekend || "—"}
+                />
+                <InfoRow
+                  icon={<MapPinned size={14} />}
+                  label="Geofence"
+                  value={`${form.radiusMeters || 0} m`}
+                />
               </Stack>
-
-              {[
-                "Shown on invoices & receipts",
-                "Used for team notifications",
-                "Required for compliance",
-              ].map((item) => (
-                <Stack
-                  key={item}
-                  direction="row"
-                  spacing={1.2}
-                  alignItems="center"
-                  mb={1.2}
-                >
-                  <CheckCircle2
-                    size={15}
-                    style={{ color: "#10B981", flexShrink: 0 }}
-                  />
-                  <Typography sx={{ fontSize: 12.5, color: "#475569" }}>
-                    {item}
-                  </Typography>
-                </Stack>
-              ))}
             </Paper>
 
-            {/* Security Card */}
+            {/* What judges will check */}
             <Paper
               elevation={0}
               sx={{
@@ -366,36 +380,102 @@ export default function SetupPage() {
                 background: "linear-gradient(135deg, #EFF6FF, #DBEAFE)",
               }}
             >
-              <Stack direction="row" spacing={1.2} alignItems="center" mb={1}>
-                <Palette size={17} style={{ color: "#2563EB" }} />
-                <Typography
-                  sx={{ fontSize: 13, fontWeight: 800, color: "#1E3A8A" }}
+              <Stack direction="row" spacing={1.2} alignItems="center" mb={1.5}>
+                <Box
+                  sx={{
+                    width: 30,
+                    height: 30,
+                    borderRadius: "9px",
+                    bgcolor: "#FFFFFF",
+                    color: "#2563EB",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
                 >
-                  Brand Appearance
+                  <Info size={15} />
+                </Box>
+                <Typography sx={{ fontSize: 13, fontWeight: 800, color: "#1E3A8A" }}>
+                  Applies to new records only
                 </Typography>
               </Stack>
-              <Typography sx={{ fontSize: 12, color: "#1E40AF", mb: 1.5 }}>
-                Your branding is applied across the workspace.
+              <Typography sx={{ fontSize: 12, color: "#1E40AF", lineHeight: 1.7 }}>
+                Changing office hours or the geofence after attendance exists
+                will not alter past days. Rules are evaluated at record creation
+                time, as required by the brief.
               </Typography>
-              <Button
-                size="small"
-                endIcon={<ArrowRight size={14} />}
-                sx={{
-                  textTransform: "none",
-                  fontWeight: 700,
-                  fontSize: 12,
-                  color: "#1D4ED8",
-                  px: 0,
-                  "&:hover": { background: "transparent" },
-                }}
-              >
-                Customize branding
-              </Button>
+            </Paper>
+
+            {/* Next step */}
+            <Paper
+              elevation={0}
+              sx={{
+                p: 2.5,
+                borderRadius: "20px",
+                border: "1px solid #E2E8F0",
+                boxShadow: "0 6px 24px rgba(15, 23, 42, 0.04)",
+              }}
+            >
+              <Stack direction="row" spacing={1.2} alignItems="center" mb={2}>
+                <Box
+                  sx={{
+                    width: 30,
+                    height: 30,
+                    borderRadius: "9px",
+                    bgcolor: "#EFF6FF",
+                    color: "#2563EB",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Layers size={15} />
+                </Box>
+                <Typography sx={{ fontSize: 13.5, fontWeight: 800, color: "#0F172A" }}>
+                  Next steps
+                </Typography>
+              </Stack>
+
+              {[
+                { t: "Create departments", done: false },
+                { t: "Define leave types & quotas", done: false },
+                { t: "Create HR logins", done: false },
+                { t: "Register first employees", done: false },
+              ].map((s, i) => (
+                <Stack
+                  key={s.t}
+                  direction="row"
+                  spacing={1.2}
+                  alignItems="center"
+                  mb={1.2}
+                >
+                  <Box
+                    sx={{
+                      width: 20,
+                      height: 20,
+                      borderRadius: "50%",
+                      border: "1.5px solid #CBD5E1",
+                      color: "#94A3B8",
+                      fontSize: 11,
+                      fontWeight: 700,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      flexShrink: 0,
+                    }}
+                  >
+                    {i + 1}
+                  </Box>
+                  <Typography sx={{ fontSize: 12.5, color: "#475569" }}>
+                    {s.t}
+                  </Typography>
+                </Stack>
+              ))}
             </Paper>
           </Stack>
         </Grid>
 
-        {/* ============ RIGHT FORM ============ */}
+        {/* ============================= FORM ============================== */}
         <Grid item xs={12} md={8}>
           <Paper
             elevation={0}
@@ -406,7 +486,7 @@ export default function SetupPage() {
               overflow: "hidden",
             }}
           >
-            {/* Card Header */}
+            {/* Card header */}
             <Box
               sx={{
                 px: { xs: 2.5, sm: 3.5 },
@@ -422,40 +502,45 @@ export default function SetupPage() {
                 alignItems="center"
               >
                 <Box>
-                  <Typography
-                    sx={{ fontSize: 17, fontWeight: 800, color: "#0F172A" }}
-                  >
-                    Organization Details
+                  <Typography sx={{ fontSize: 17, fontWeight: 800, color: "#0F172A" }}>
+                    Company Profile
                   </Typography>
                   <Typography sx={{ fontSize: 12.5, color: "#64748B", mt: 0.3 }}>
-                    Fill in the information below to complete your profile.
+                    Required fields are marked with an asterisk.
                   </Typography>
                 </Box>
-                <Box
+                <Chip
+                  label={`${completion}% complete`}
+                  size="small"
                   sx={{
-                    px: 1.2,
-                    py: 0.5,
-                    borderRadius: "8px",
                     bgcolor: "#EFF6FF",
                     color: "#1D4ED8",
-                    fontSize: 11,
                     fontWeight: 700,
-                    display: { xs: "none", sm: "block" },
+                    fontSize: 11,
+                    borderRadius: "8px",
+                    display: { xs: "none", sm: "inline-flex" },
                   }}
-                >
-                  {completion}% filled
-                </Box>
+                />
               </Stack>
             </Box>
 
-            <Box component="form" onSubmit={handleSave} sx={{ p: { xs: 2.5, sm: 3.5 } }}>
-              {/* Section: Basic Information */}
-              <SectionLabel icon={<Building2 size={15} />} title="Basic Information" />
-              <Grid container spacing={2.5} sx={{ mt: 1.5, mb: 1 }}>
+            <Box
+              component="form"
+              onSubmit={handleSave}
+              sx={{ p: { xs: 2.5, sm: 3.5 } }}
+            >
+              {/* ============ 1. BASIC INFORMATION ============ */}
+              <SectionLabel
+                icon={<Building2 size={15} />}
+                title="Basic information"
+                subtitle="How your organization appears across HCM Lite"
+              />
+
+              <Grid container spacing={2.5}>
                 <Grid item xs={12} sm={6}>
                   <TextField
-                    label="Organization name"
-                    placeholder="Enter organization name"
+                    label="Organization name *"
+                    placeholder="Acme Corporation"
                     value={form.name}
                     onChange={update("name")}
                     fullWidth
@@ -472,7 +557,7 @@ export default function SetupPage() {
                 <Grid item xs={12} sm={6}>
                   <TextField
                     select
-                    label="Industry"
+                    label="Industry *"
                     value={form.industry}
                     onChange={update("industry")}
                     fullWidth
@@ -487,24 +572,17 @@ export default function SetupPage() {
                       "Finance",
                       "Construction",
                       "Other",
-                    ].map((item) => (
-                      <MenuItem key={item} value={item}>
-                        {item}
+                    ].map((i) => (
+                      <MenuItem key={i} value={i}>
+                        {i}
                       </MenuItem>
                     ))}
                   </TextField>
                 </Grid>
-              </Grid>
-
-              <Divider sx={{ my: 3, borderColor: "#F1F5F9" }} />
-
-              {/* Section: Contact */}
-              <SectionLabel icon={<Mail size={15} />} title="Contact Information" />
-              <Grid container spacing={2.5} sx={{ mt: 1.5, mb: 1 }}>
                 <Grid item xs={12} sm={6}>
                   <TextField
-                    label="Contact email"
-                    placeholder="company@example.com"
+                    label="Contact email *"
+                    placeholder="hr@company.com"
                     type="email"
                     value={form.email}
                     onChange={update("email")}
@@ -521,7 +599,7 @@ export default function SetupPage() {
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <TextField
-                    label="Phone number"
+                    label="Contact phone *"
                     placeholder="+92 300 1234567"
                     value={form.phone}
                     onChange={update("phone")}
@@ -536,39 +614,10 @@ export default function SetupPage() {
                     }}
                   />
                 </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    label="Office address"
-                    placeholder="Enter your organization's office address"
-                    value={form.address}
-                    onChange={update("address")}
-                    multiline
-                    minRows={2}
-                    fullWidth
-                    sx={fieldSx}
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment
-                          position="start"
-                          sx={{ alignSelf: "flex-start", mt: 1.7 }}
-                        >
-                          <MapPin style={iconStyle} />
-                        </InputAdornment>
-                      ),
-                    }}
-                  />
-                </Grid>
-              </Grid>
-
-              <Divider sx={{ my: 3, borderColor: "#F1F5F9" }} />
-
-              {/* Section: Web & Locale */}
-              <SectionLabel icon={<Globe size={15} />} title="Web & Locale" />
-              <Grid container spacing={2.5} sx={{ mt: 1.5 }}>
                 <Grid item xs={12} sm={6}>
                   <TextField
                     label="Website"
-                    placeholder="https://www.example.com"
+                    placeholder="https://company.com"
                     value={form.website}
                     onChange={update("website")}
                     fullWidth
@@ -604,16 +653,268 @@ export default function SetupPage() {
                     <MenuItem value="UTC">UTC</MenuItem>
                   </TextField>
                 </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    label="Office address"
+                    placeholder="Floor, building, street, city"
+                    value={form.address}
+                    onChange={update("address")}
+                    multiline
+                    minRows={2}
+                    fullWidth
+                    sx={fieldSx}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment
+                          position="start"
+                          sx={{ alignSelf: "flex-start", mt: 1.7 }}
+                        >
+                          <MapPin style={iconStyle} />
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                </Grid>
               </Grid>
 
-              {/* Action bar */}
+              <Divider sx={{ my: 3.5, borderColor: "#F1F5F9" }} />
+
+              {/* ============ 2. WORK SCHEDULE ============ */}
+              <SectionLabel
+                icon={<Clock size={15} />}
+                title="Work schedule & rules"
+                subtitle="These rules decide late, half-day and absent statuses"
+              />
+
+              <Grid container spacing={2.5}>
+                <Grid item xs={12} sm={4}>
+                  <TextField
+                    label="Office start *"
+                    type="time"
+                    value={form.officeStart}
+                    onChange={update("officeStart")}
+                    fullWidth
+                    sx={fieldSx}
+                    InputLabelProps={{ shrink: true }}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={4}>
+                  <TextField
+                    label="Grace period (min) *"
+                    type="number"
+                    value={form.graceMinutes}
+                    onChange={update("graceMinutes")}
+                    fullWidth
+                    sx={fieldSx}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <Typography sx={{ fontSize: 12, color: "#94A3B8", fontWeight: 600 }}>
+                            min
+                          </Typography>
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={4}>
+                  <TextField
+                    label="Half-day under (hrs)"
+                    type="number"
+                    value={form.halfDayHours}
+                    onChange={update("halfDayHours")}
+                    fullWidth
+                    sx={fieldSx}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <Typography sx={{ fontSize: 12, color: "#94A3B8", fontWeight: 600 }}>
+                            hrs
+                          </Typography>
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    select
+                    label="Weekend *"
+                    value={form.weekend}
+                    onChange={update("weekend")}
+                    fullWidth
+                    sx={fieldSx}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <Calendar style={iconStyle} />
+                        </InputAdornment>
+                      ),
+                    }}
+                  >
+                    <MenuItem value="Sat-Sun">Saturday & Sunday</MenuItem>
+                    <MenuItem value="Fri-Sat">Friday & Saturday</MenuItem>
+                    <MenuItem value="Sun">Sunday only</MenuItem>
+                  </TextField>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    label="Working days / week"
+                    value="5"
+                    disabled
+                    fullWidth
+                    sx={{ ...fieldSx, "& .MuiInputBase-input": { color: "#64748B" } }}
+                    helperText="Derived from weekend selection"
+                    FormHelperTextProps={{ sx: { fontSize: 11, ml: 0.5 } }}
+                  />
+                </Grid>
+              </Grid>
+
               <Box
                 sx={{
-                  mt: 4,
-                  pt: 3,
-                  borderTop: "1px solid #F1F5F9",
+                  mt: 2,
+                  p: 1.5,
+                  borderRadius: "10px",
+                  bgcolor: "#F8FAFC",
+                  border: "1px dashed #E2E8F0",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1,
                 }}
               >
+                <Info size={14} style={{ color: "#2563EB", flexShrink: 0 }} />
+                <Typography sx={{ fontSize: 12, color: "#475569" }}>
+                  Attendance will be marked <b>late</b> after{" "}
+                  {form.officeStart || "09:00"} + {form.graceMinutes || 15} min
+                  grace. <b>Half-day</b> if hours &lt; {form.halfDayHours || 5}.
+                </Typography>
+              </Box>
+
+              <Divider sx={{ my: 3.5, borderColor: "#F1F5F9" }} />
+
+              {/* ============ 3. GEOFENCE / CAMERA ATTENDANCE ============ */}
+              <SectionLabel
+                icon={<Compass size={15} />}
+                title="Office location & geofence"
+                subtitle="Required for camera attendance (optional bonus feature)"
+              />
+
+              <Grid container spacing={2.5}>
+                <Grid item xs={12} sm={4}>
+                  <TextField
+                    label="Office latitude"
+                    placeholder="24.8607"
+                    value={form.officeLat}
+                    onChange={update("officeLat")}
+                    fullWidth
+                    sx={fieldSx}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <MapPin style={iconStyle} />
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={4}>
+                  <TextField
+                    label="Office longitude"
+                    placeholder="67.0011"
+                    value={form.officeLng}
+                    onChange={update("officeLng")}
+                    fullWidth
+                    sx={fieldSx}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <MapPin style={iconStyle} />
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={4}>
+                  <TextField
+                    label="Radius *"
+                    type="number"
+                    value={form.radiusMeters}
+                    onChange={update("radiusMeters")}
+                    fullWidth
+                    sx={fieldSx}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <Typography sx={{ fontSize: 12, color: "#94A3B8", fontWeight: 600 }}>
+                            meters
+                          </Typography>
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                </Grid>
+
+                <Grid item xs={12}>
+                  <Box
+                    sx={{
+                      p: 2,
+                      borderRadius: "12px",
+                      border: "1px solid #E2E8F0",
+                      bgcolor: "#F8FAFC",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      flexWrap: "wrap",
+                      gap: 1.5,
+                    }}
+                  >
+                    <Stack direction="row" spacing={1.2} alignItems="center">
+                      <Box
+                        sx={{
+                          width: 32,
+                          height: 32,
+                          borderRadius: "9px",
+                          bgcolor: "#EFF6FF",
+                          color: "#2563EB",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <Users size={15} />
+                      </Box>
+                      <Box>
+                        <Typography sx={{ fontSize: 13, fontWeight: 700, color: "#0F172A" }}>
+                          Require camera check-in
+                        </Typography>
+                        <Typography sx={{ fontSize: 11.5, color: "#64748B" }}>
+                          Employee must be inside radius with a detected face
+                        </Typography>
+                      </Box>
+                    </Stack>
+                    <FormControlLabel
+                      control={
+                        <Switch
+                          checked={form.requireCamera}
+                          onChange={toggle("requireCamera")}
+                          sx={{
+                            "& .MuiSwitch-switchBase.Mui-checked": {
+                              color: "#2563EB",
+                            },
+                            "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
+                              backgroundColor: "#93B4F0",
+                            },
+                          }}
+                        />
+                      }
+                      label=""
+                    />
+                  </Box>
+                </Grid>
+              </Grid>
+
+              {/* ============ ACTION BAR ============ */}
+              <Box sx={{ mt: 4, pt: 3, borderTop: "1px solid #F1F5F9" }}>
                 <Stack
                   direction={{ xs: "column", sm: "row" }}
                   justifyContent="space-between"
@@ -630,18 +931,14 @@ export default function SetupPage() {
                       <>
                         <CheckCircle2 size={16} style={{ color: "#10B981" }} />
                         <Typography
-                          sx={{
-                            fontSize: 12.5,
-                            color: "#10B981",
-                            fontWeight: 600,
-                          }}
+                          sx={{ fontSize: 12.5, color: "#10B981", fontWeight: 600 }}
                         >
-                          Profile updated successfully
+                          Company profile saved
                         </Typography>
                       </>
                     ) : (
                       <Typography sx={{ fontSize: 12.5, color: "#94A3B8" }}>
-                        All changes are saved locally until submitted.
+                        Setup changes only affect new records, never past ones.
                       </Typography>
                     )}
                   </Stack>
@@ -678,19 +975,17 @@ export default function SetupPage() {
                         textTransform: "none",
                         fontWeight: 700,
                         fontSize: 13.5,
-                        background:
-                          "linear-gradient(90deg, #1D4ED8, #3B82F6)",
+                        background: "linear-gradient(90deg, #1D4ED8, #3B82F6)",
                         boxShadow: "0 6px 16px rgba(37, 99, 235, 0.25)",
                         transition: "all 0.2s ease",
                         "&:hover": {
-                          background:
-                            "linear-gradient(90deg, #1E40AF, #2563EB)",
+                          background: "linear-gradient(90deg, #1E40AF, #2563EB)",
                           boxShadow: "0 8px 22px rgba(37, 99, 235, 0.35)",
                           transform: "translateY(-1px)",
                         },
                       }}
                     >
-                      Save Changes
+                      Save & Continue
                     </Button>
                   </Stack>
                 </Stack>
@@ -703,34 +998,16 @@ export default function SetupPage() {
   );
 }
 
-/* ---------- Section Label Helper ---------- */
-function SectionLabel({ icon, title }) {
+/* -------------------------------- InfoRow --------------------------------- */
+function InfoRow({ icon, label, value }) {
   return (
-    <Stack direction="row" spacing={1} alignItems="center">
-      <Box
-        sx={{
-          width: 26,
-          height: 26,
-          borderRadius: "8px",
-          bgcolor: "#EFF6FF",
-          color: "#2563EB",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        {icon}
-      </Box>
-      <Typography
-        sx={{
-          fontSize: 12,
-          fontWeight: 800,
-          color: "#334155",
-          letterSpacing: 0.6,
-          textTransform: "uppercase",
-        }}
-      >
-        {title}
+    <Stack direction="row" justifyContent="space-between" alignItems="center">
+      <Stack direction="row" spacing={1} alignItems="center">
+        <Box sx={{ color: "#94A3B8", display: "flex" }}>{icon}</Box>
+        <Typography sx={{ fontSize: 12, color: "#64748B" }}>{label}</Typography>
+      </Stack>
+      <Typography sx={{ fontSize: 12.5, fontWeight: 700, color: "#0F172A" }}>
+        {value}
       </Typography>
     </Stack>
   );
