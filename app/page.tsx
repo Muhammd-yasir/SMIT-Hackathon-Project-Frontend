@@ -364,7 +364,7 @@ export default function Home() {
             </Typography>
 
             <Typography className="text-xs text-slate-400">
-              © {new Date().getFullYear()} HCM Lite. All rights reserved.
+              © 2026 HCM Lite. All rights reserved.
             </Typography>
 
           </Box>
